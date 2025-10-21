@@ -1,0 +1,91 @@
+import com.example.taofamily.features.initiation.domain.model.Gender;
+import com.example.taofamily.features.initiation.domain.model.Master;
+import com.example.taofamily.features.initiation.domain.model.Temple;
+import kotlin.Boolean;
+
+CREATE TABLE Initiation (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    personId TEXT NOT NULL,
+    personName TEXT NOT NULL,
+    personAge INTEGER NOT NULL,
+    contact TEXT NOT NULL,
+    gender TEXT AS Gender NOT NULL,
+    education TEXT NOT NULL,
+    fullAddress TEXT NOT NULL,
+    masterName TEXT AS Master NOT NULL,
+    introducerName TEXT NOT NULL,
+    guarantorName TEXT NOT NULL,
+    templeName TEXT AS Temple NOT NULL,
+    initiationDate TEXT NOT NULL,
+    meritFee REAL NOT NULL,
+    is2DaysDharmaClassAttend INTEGER AS Boolean NOT NULL,
+    dharmaMeetingDate TEXT NOT NULL
+);
+
+-- Queries
+selectAll:
+SELECT * FROM Initiation;
+
+selectById:
+SELECT * FROM Initiation WHERE id = ?;
+
+selectByPersonId:
+SELECT * FROM Initiation WHERE personId = ?;
+
+selectByMaster:
+SELECT * FROM Initiation WHERE masterName = ?;
+
+selectByTemple:
+SELECT * FROM Initiation WHERE templeName = ?;
+
+insert:
+INSERT INTO Initiation(
+    personId,
+    personName,
+    personAge,
+    contact,
+    gender,
+    education,
+    fullAddress,
+    masterName,
+    introducerName,
+    guarantorName,
+    templeName,
+    initiationDate,
+    meritFee,
+    is2DaysDharmaClassAttend,
+    dharmaMeetingDate
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE Initiation
+SET personId = ?,
+    personName = ?,
+    personAge = ?,
+    contact = ?,
+    gender = ?,
+    education = ?,
+    fullAddress = ?,
+    masterName = ?,
+    introducerName = ?,
+    guarantorName = ?,
+    templeName = ?,
+    initiationDate = ?,
+    meritFee = ?,
+    is2DaysDharmaClassAttend = ?,
+    dharmaMeetingDate = ?
+WHERE id = ?;
+
+deleteById:
+DELETE FROM Initiation WHERE id = ?;
+
+deleteAll:
+DELETE FROM Initiation;
+
+countAll:
+SELECT COUNT(*) FROM Initiation;
+
+searchByName:
+SELECT * FROM Initiation
+WHERE personName LIKE '%' || ? || '%';

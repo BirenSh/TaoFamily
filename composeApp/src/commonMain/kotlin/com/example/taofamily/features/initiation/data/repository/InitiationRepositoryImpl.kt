@@ -1,0 +1,54 @@
+package com.example.taofamily.features.initiation.data.repository
+
+import com.example.taofamily.features.initiation.data.local.InitLocalDataSource
+import com.example.taofamily.features.initiation.data.remote.InitRemoteDataSource
+import com.example.taofamily.features.initiation.domain.model.InitiationFormFiled
+import com.example.taofamily.features.initiation.data.repository.InitiationRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
+
+class InitiationRepositoryImpl(
+    val localDataSource: InitLocalDataSource,
+    val remoteDataSource: InitRemoteDataSource,
+    private val dispatcher: CoroutineContext // Injected via Koin (Dispatchers.Default or IO)
+
+) : InitiationRepository {
+
+    override fun getAllEntries(): Flow<List<InitiationFormFiled>> {
+        return localDataSource.getAllEntries()
+    }
+
+    override suspend fun saveEntry(entry: InitiationFormFiled) = withContext(dispatcher){
+         localDataSource.saveEntry(entry)
+
+        //Asynchronously push to server
+        try {
+            remoteDataSource.pushEntry(entry)
+        }catch (e: Exception){
+
+        }
+
+    }
+
+    override suspend fun deleteEntry(id: Long)  = withContext(dispatcher){
+        localDataSource.deleteEntry(id)
+        try {
+            remoteDataSource.deleteEntry(id)
+        }catch (e: Exception){
+
+        }
+    }
+
+    override suspend fun syncInitialData() = withContext(dispatcher){
+        try {
+            val fetchData = remoteDataSource.fetchAllEntries()
+            if (fetchData.isNotEmpty()){
+                localDataSource.replaceAllEntries(fetchData)
+            }
+        }catch (e: Exception){
+
+        }
+    }
+}

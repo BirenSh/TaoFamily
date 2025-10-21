@@ -1,0 +1,143 @@
+package com.example.taofamily.features.initiation.data.local
+
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
+import com.example.taofamily.db.DatabaseWrapper
+import com.example.taofamily.features.initiation.domain.model.InitiationFormFiled
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.sync.Mutex
+
+class InitLocalDataSourceImpl(
+    private val dbWrapper: DatabaseWrapper
+) : InitLocalDataSource {
+
+    private val mutex = Mutex()
+    private val queries = dbWrapper.initiationQueries
+
+    // Map from SQLDelight Initiation to domain InitiationFormFiled
+    private fun mapToDomain(dbRecord: com.example.taofamily.db.Initiation): InitiationFormFiled {
+        return InitiationFormFiled(
+            id = dbRecord.id,
+            personId = dbRecord.personId,
+            personName = dbRecord.personName,
+            personAge = dbRecord.personAge.toInt(), // Long → Int
+            contact = dbRecord.contact,
+            gender = dbRecord.gender, // Already Gender enum (thanks to adapter)
+            education = dbRecord.education,
+            fullAddress = dbRecord.fullAddress,
+            masterName = dbRecord.masterName, // Already Master enum
+            introducerName = dbRecord.introducerName,
+            guarantorName = dbRecord.guarantorName,
+            templeName = dbRecord.templeName, // Already Temple enum
+            initiationDate = dbRecord.initiationDate,
+            meritFee = dbRecord.meritFee,
+            is2DaysDharmaClassAttend = dbRecord.is2DaysDharmaClassAttend, // Already Boolean
+            dharmaMeetingDate = dbRecord.dharmaMeetingDate
+        )
+    }
+
+    override fun getAllEntries(): Flow<List<InitiationFormFiled>> {
+        val entriesFlow = queries.selectAll()
+            .asFlow()
+            .mapToList(Dispatchers.Default)
+            .map { list -> list.map { mapToDomain(it) } }
+
+        // FIX 1: Use onEach to observe and log the emitted list size
+        return entriesFlow.onEach { list ->
+            // This code executes *every time* data changes in the DB
+            println("📊 DB Query: getAllEntries")
+            println("📊 Found ${list.size} entries")
+
+            // You can check DB availability indirectly here:
+            if (list.isEmpty()) {
+                println("❌ Database appears empty or uninitialized.")
+            } else {
+                println("✅ Database is reachable and contains data.")
+            }
+        }
+    }
+
+    override suspend fun saveEntry(entry: InitiationFormFiled) {
+        println("💾 Saving entry: ${entry.personName}")
+
+        queries.transaction {
+            if (entry.id == 0L) {
+                // Insert new entry
+                queries.insert(
+                    personId = entry.personId,
+                    personName = entry.personName,
+                    personAge = entry.personAge.toLong(), // Int → Long
+                    contact = entry.contact,
+                    gender = entry.gender, // Enum (adapter handles conversion)
+                    education = entry.education,
+                    fullAddress = entry.fullAddress,
+                    masterName = entry.masterName, // Enum
+                    introducerName = entry.introducerName,
+                    guarantorName = entry.guarantorName,
+                    templeName = entry.templeName, // Enum
+                    initiationDate = entry.initiationDate,
+                    meritFee = entry.meritFee,
+                    is2DaysDharmaClassAttend = entry.is2DaysDharmaClassAttend, // Boolean
+                    dharmaMeetingDate = entry.dharmaMeetingDate
+                )
+                println("✅ Insert successful")
+
+            } else {
+                // Update existing entry
+                queries.update(
+                    personId = entry.personId,
+                    personName = entry.personName,
+                    personAge = entry.personAge.toLong(),
+                    contact = entry.contact,
+                    gender = entry.gender,
+                    education = entry.education,
+                    fullAddress = entry.fullAddress,
+                    masterName = entry.masterName,
+                    introducerName = entry.introducerName,
+                    guarantorName = entry.guarantorName,
+                    templeName = entry.templeName,
+                    initiationDate = entry.initiationDate,
+                    meritFee = entry.meritFee,
+                    is2DaysDharmaClassAttend = entry.is2DaysDharmaClassAttend,
+                    dharmaMeetingDate = entry.dharmaMeetingDate,
+                    id = entry.id
+                )
+            }
+            // Verify the save
+            val count = queries.countAll().executeAsOne()
+            println("📊 Total entries in DB: $count")
+        }
+    }
+
+    override suspend fun deleteEntry(id: Long) {
+        queries.deleteById(id)
+    }
+
+    override suspend fun replaceAllEntries(entries: List<InitiationFormFiled>) {
+        queries.transaction {
+            queries.deleteAll()
+            entries.forEach { entry ->
+                queries.insert(
+                    personId = entry.personId,
+                    personName = entry.personName,
+                    personAge = entry.personAge.toLong(),
+                    contact = entry.contact,
+                    gender = entry.gender,
+                    education = entry.education,
+                    fullAddress = entry.fullAddress,
+                    masterName = entry.masterName,
+                    introducerName = entry.introducerName,
+                    guarantorName = entry.guarantorName,
+                    templeName = entry.templeName,
+                    initiationDate = entry.initiationDate,
+                    meritFee = entry.meritFee,
+                    is2DaysDharmaClassAttend = entry.is2DaysDharmaClassAttend,
+                    dharmaMeetingDate = entry.dharmaMeetingDate
+                )
+            }
+        }
+    }
+}
