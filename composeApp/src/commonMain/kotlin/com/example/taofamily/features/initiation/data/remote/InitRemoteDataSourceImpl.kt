@@ -1,7 +1,11 @@
 package com.example.taofamily.features.initiation.data.remote
 
+import com.example.taofamily.core.platform.auth.ServiceAccountAuth
+import com.example.taofamily.core.platform.getServiceAccountProvider
 import com.example.taofamily.features.initiation.domain.model.InitiationFormFiled
+import com.example.taofamily.features.initiation.domain.model.SheetsRequestDto
 import io.ktor.client.HttpClient
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
@@ -13,17 +17,26 @@ import kotlinx.serialization.json.Json
 
 
 class InitRemoteDataSourceImpl(
-    private val client: HttpClient // Injected via Koin
+    private val client: HttpClient, // Injected via Koin,
+    private val auth: ServiceAccountAuth
+
 ): InitRemoteDataSource {
+    companion object{
+        const val SHEETID = "1BTWLrvIMjLQpWqG5QWWCoGPJGUyvGQPf7cBW7ZtSjW8"
+         const val SHEET_NAME = "Sheet1"
+        const  val baseUrl = "https://sheets.googleapis.com/v4/spreadsheets"
+
+
+    }
 
     private fun mapToSheetRow (entry: InitiationFormFiled): List<Any>{
         return listOf(
             entry.personId,
             entry.personName,
             entry.personAge,
-            entry.contact,
             entry.gender.label,       // Send Enum label as String
             entry.education,
+            entry.contact,
             entry.fullAddress,
             entry.masterName.label,   // Send Enum label as String
             entry.introducerName,
@@ -41,23 +54,24 @@ class InitRemoteDataSourceImpl(
     }
 
     override suspend fun pushEntry(entry: InitiationFormFiled) {
-       val rowValues = mapToSheetRow(entry)
 
+        val token = auth.getAccessToken() // Get token here
+
+        val rowValues = mapToSheetRow(entry).map { it.toString() }
         // The body must be formatted into a simple ValueRange JSON structure:
-        val jsonBody = mapOf(
-            "majorDimension" to "ROWS",
-            "values" to listOf(rowValues)
+        val jsonBody = SheetsRequestDto(
+            majorDimension = "ROWS",
+            values = listOf(rowValues) // List of lists: [[value1, value2, ...]]
         )
 
         // Construct the API endpoint for appending data
-        val endpoint =
-            "https://sheets.googleapis.com/v4/spreadsheets/SPREADSHEET_ID/values/SHEET_NAME!A1:Z1?valueInputOption=USER_ENTERED"
+        val endpoint = "$baseUrl/$SHEETID/values/$SHEET_NAME!A:Z:append?valueInputOption=USER_ENTERED"
+
         try {
-            val response = client.post {
-                url(endpoint)
+            val response = client.post(endpoint) {
+                header("Authorization", "Bearer $token") // Add manually
                 contentType(ContentType.Application.Json)
-                // Use kotlinx.serialization.json.Json to convert the Map to a JSON string
-                setBody(Json.encodeToString(jsonBody))
+                setBody(jsonBody)
 
             }
 
@@ -66,7 +80,6 @@ class InitRemoteDataSourceImpl(
                 val errorBody = response.bodyAsText()
                 throw Exception("Sheets API Upload failed: ${response.status} - $errorBody")
             }
-            println("🌐 Sheet upload successful for entry: ${entry.personName}")
 
         }catch (e: Exception){
             throw Exception("Network or Serialization Error during sheet upload: ${e.message}", e)

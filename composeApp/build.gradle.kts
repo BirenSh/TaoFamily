@@ -40,11 +40,22 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
-
             linkerOpts.add("-lsqlite3")
 
+            // 1. Foundation
+            linkerOpts.add("-framework")
+            linkerOpts.add("Foundation")
 
+            // 2. Security
+            linkerOpts.add("-framework")
+            linkerOpts.add("Security")
+
+            // 3. CoreFoundation
+            linkerOpts.add("-framework")
+            linkerOpts.add("CoreFoundation")
         }
+
+
     }
     
     sourceSets {
@@ -53,6 +64,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
 
             implementation(libs.ktor.client.okhttp) // Ktor HTTP Client Engine for Android
+//            implementation(libs.ktor.client.android) // Ktor HTTP Client Engine for Android
             implementation(libs.koin.android)       // Koin integration for Android context
             implementation(libs.sqldelight.driver.android) // Android driver
 
@@ -74,6 +86,10 @@ kotlin {
             implementation(libs.ktor.client.core)            // Ktor Networking Core
             implementation(libs.ktor.client.contentNegotiation) // Ktor Content Negotiation
             implementation(libs.ktor.serialization.kotlinxJson) // Ktor JSON Serialization
+            implementation(libs.ktor.client.auth)
+            implementation(libs.ktor.client.logging)
+            implementation(libs.kotlinx.datetime)
+
             implementation(libs.sqldelight.runtime)
             implementation(libs.sqldelight.coroutines)
 
@@ -81,7 +97,6 @@ kotlin {
             implementation(libs.voyager.navigator)       // Core navigation components
             implementation(libs.voyager.screen.model)    // Lifecycle management for ViewModels/ScreenModels
             implementation(libs.voyager.koin)
-
 
         }
         val iosMain by creating {
@@ -96,6 +111,7 @@ kotlin {
             implementation(libs.kotlin.test)
         }
     }
+
 
 }
 

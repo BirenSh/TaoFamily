@@ -1,44 +1,50 @@
 package com.example.taofamily.features.initiation.presentation.form_screen
 
+import androidx.compose.foundation.gestures.ScrollScope
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.example.taofamily.core.platform.getServiceAccountProvider
 import com.example.taofamily.core.utils.UiState
 import com.example.taofamily.features.initiation.data.repository.InitiationRepository
 import com.example.taofamily.features.initiation.domain.model.Gender
 import com.example.taofamily.features.initiation.domain.model.InitiationFormFiled
 import com.example.taofamily.features.initiation.domain.model.Master
 import com.example.taofamily.features.initiation.domain.model.Temple
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class InitiationFormViewModel(
-    private val initiationRepository: InitiationRepository
+    private val initiationRepository: InitiationRepository,
+
 ) : ScreenModel {
     private val _form = MutableStateFlow(InitiationFormFiled.empty())
     val formData: StateFlow<InitiationFormFiled> = _form.asStateFlow()
 
-    private val _isFormValid = MutableStateFlow<Boolean>(false)
+    private val _isFormValid = MutableStateFlow<Boolean>(true)
     val isFormValid: StateFlow<Boolean> = _isFormValid
 
     private val submitForm = MutableStateFlow<UiState<String>>(UiState.Ideal)
     val submitFormState: StateFlow<UiState<String>> = submitForm.asStateFlow()
 
 
+
     fun updateForm(newEntry: InitiationFormFiled) {
         _form.value = newEntry
 
         //validate each form on typing
-        _isFormValid.value = formValidation(_form.value)
+//        _isFormValid.value = formValidation(_form.value)
     }
 
     fun onSubmitClick() {
         screenModelScope.launch {
             val finalData = _form.value
             val formError = dateNumValidation(finalData)
+            initiationRepository.saveEntry(finalData)
             if(formError.first){
-                initiationRepository.saveEntry(finalData)
                 submitForm.value = UiState.Success("Form submitted successfully")
             } else {
                 submitForm.value = UiState.Error(formError.second)

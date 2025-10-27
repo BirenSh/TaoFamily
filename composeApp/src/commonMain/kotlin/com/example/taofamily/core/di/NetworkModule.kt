@@ -1,38 +1,49 @@
 package com.example.taofamily.core.di
 
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.request.header
-import io.ktor.serialization.kotlinx.json.json
+import com.example.taofamily.core.platform.auth.ServiceAccountAuth
+import com.example.taofamily.core.platform.getServiceAccountProvider
+import com.example.taofamily.features.initiation.domain.model.ServiceAuth
+import io.ktor.client.*
+import io.ktor.client.plugins.auth.*
+import io.ktor.client.plugins.auth.providers.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import org.koin.mp.KoinPlatformTools
-
-
-// --- Interface and Placeholder for Token ---
-interface AuthTokenProvider {
-    fun getToken(): String
-}
-
-
-class PlaceholderTokenProvider : AuthTokenProvider {
-    override fun getToken(): String {
-        return "MOCK_GOOGLE_SHEET_ACCESS_TOKEN" // Placeholder
-    }
-}
-//---------------------------------
 
 val networkModule: Module = module {
+    // HttpClient for auth token exchange (no auth needed)
+    single(qualifier = named("authClient")) {
+        HttpClient {
+            install(ContentNegotiation) {
+                json(Json {
+                    ignoreUnknownKeys = true
+                    prettyPrint = true
+                })
+            }
+            install(Logging) {
+                level = LogLevel.INFO
+            }
+        }
+    }
 
-    // A. PROVIDE ACCESS TOKEN PROVIDER
-    single<AuthTokenProvider> { PlaceholderTokenProvider() }
 
-    // B. PROVIDE KTOR HTTP CLIENT
+    // Service Account Auth - lazy initialization
     single {
-        HttpClient() {
+        ServiceAccountAuth(
+            credentialsProvider = { loadServiceAccountCredentials() },
+            httpClient = get(qualifier = named("authClient"))
+        )
+    }
 
+    // Main HttpClient with auto-auth
+    single {
+        val auth: ServiceAccountAuth = get()
+
+        HttpClient {
             install(ContentNegotiation) {
                 json(Json {
                     ignoreUnknownKeys = true
@@ -40,15 +51,41 @@ val networkModule: Module = module {
                 })
             }
 
-            defaultRequest {
 
-                val tokenProvider: AuthTokenProvider = get()
-                header("Authorization", "Bearer ${tokenProvider.getToken()}")
-                url("https://sheets.googleapis.com/v4/spreadsheets/")
+            install(Logging) {
+                level = LogLevel.ALL
+
             }
 
-            // Note: You can add an optional expect/actual block here if you need
-            // platform-specific engine configuration (e.g., certificate pinning).
+            // Add auth interceptor
+            install(Auth) {
+                bearer {
+                    loadTokens {
+                        try {
+                            val token = auth.getAccessToken()
+                            BearerTokens(token, token)
+                        } catch (e: Exception) {
+                            println("❌ Failed to load token: ${e.message}")
+                            null
+                        }
+                    }
+
+                    refreshTokens {
+                        try {
+                            val token = auth.getAccessToken()
+                            BearerTokens(token, token)
+                        } catch (e: Exception) {
+                            println("❌ Failed to refresh token: ${e.message}")
+                            null
+                        }
+                    }
+                }
+            }
         }
     }
+}
+
+suspend fun loadServiceAccountCredentials(): ServiceAuth.ServiceAccountCredentials {
+    val jsonString = getServiceAccountProvider().getCredentialsData().decodeToString()
+    return Json.decodeFromString(jsonString)
 }

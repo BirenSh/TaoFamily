@@ -49,7 +49,6 @@ class MemberListViewModel(
     private fun listenToFilteredEntries() {
         screenModelScope.launch {
             combine(allEntries,_searchQuery,_filterState){entries,query,filter->
-                println("===list: ${entries.size}")
 
                 val filteredList = entries.filter { entry ->
                     val q = query.trim().lowercase()
@@ -79,7 +78,6 @@ class MemberListViewModel(
                     searchMatch && genderMatch && templeMatch && classMatch && startDateMatch && endDateMatch
 
                 }
-                    println("===list: ${filteredList.size}")
 
                 when{
                     filteredList.isNotEmpty()  ->_state.value =   UiState.Success(filteredList)

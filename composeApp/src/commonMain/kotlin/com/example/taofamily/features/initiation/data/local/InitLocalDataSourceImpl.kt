@@ -45,23 +45,10 @@ class InitLocalDataSourceImpl(
             .mapToList(Dispatchers.Default)
             .map { list -> list.map { mapToDomain(it) } }
 
-        // FIX 1: Use onEach to observe and log the emitted list size
-        return entriesFlow.onEach { list ->
-            // This code executes *every time* data changes in the DB
-            println("📊 DB Query: getAllEntries")
-            println("📊 Found ${list.size} entries")
-
-            // You can check DB availability indirectly here:
-            if (list.isEmpty()) {
-                println("❌ Database appears empty or uninitialized.")
-            } else {
-                println("✅ Database is reachable and contains data.")
-            }
-        }
+        return entriesFlow
     }
 
     override suspend fun saveEntry(entry: InitiationFormFiled) {
-        println("💾 Saving entry: ${entry.personName}")
 
         queries.transaction {
             if (entry.id == 0L) {
@@ -83,7 +70,6 @@ class InitLocalDataSourceImpl(
                     is2DaysDharmaClassAttend = entry.is2DaysDharmaClassAttend, // Boolean
                     dharmaMeetingDate = entry.dharmaMeetingDate
                 )
-                println("✅ Insert successful")
 
             } else {
                 // Update existing entry
@@ -108,7 +94,6 @@ class InitLocalDataSourceImpl(
             }
             // Verify the save
             val count = queries.countAll().executeAsOne()
-            println("📊 Total entries in DB: $count")
         }
     }
 

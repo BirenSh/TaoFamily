@@ -20,7 +20,12 @@ val initiationModule: Module = module{
 
     // A. DATA SOURCES (Implementation classes must be imported)
     single<InitLocalDataSource> { InitLocalDataSourceImpl(dbWrapper = get ()) }
-    single<InitRemoteDataSource> { InitRemoteDataSourceImpl(client = get()) }
+    single<InitRemoteDataSource> {
+        InitRemoteDataSourceImpl(
+            client = get(),
+            auth = get()
+        )
+    }
 
     // B. REPOSITORY
     single<InitiationRepository> {
@@ -36,7 +41,9 @@ val initiationModule: Module = module{
         MemberListViewModel(initiationRepository =  get())
     }
     factory {
-        InitiationFormViewModel(initiationRepository =  get())
+        InitiationFormViewModel(
+            initiationRepository =  get(),
+            )
     }
 
 }

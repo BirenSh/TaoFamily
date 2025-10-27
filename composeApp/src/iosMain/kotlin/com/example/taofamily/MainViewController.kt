@@ -2,10 +2,22 @@ package com.example.taofamily
 
 import androidx.compose.ui.window.ComposeUIViewController
 import com.example.taofamily.core.di.initKoin
+import platform.UIKit.UIViewController
 
-fun MainViewController() = ComposeUIViewController(
+private var koinInitialized = false
 
-    configure = {
+fun MainViewController(): UIViewController {
+    // Initialize Koin ONCE, not on every call
+    if (!koinInitialized) {
         initKoin()
+        koinInitialized = true
     }
-) { App() }
+
+    return ComposeUIViewController(
+        configure = {
+            enforceStrictPlistSanityCheck = false
+        }
+    ) {
+        App()
+    }
+}
