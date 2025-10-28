@@ -1,5 +1,13 @@
 package com.example.taofamily.core.utils
 
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+
+
 object DateUtils {
     fun formatRawDateString(rawDigits: String): String {
         val digits = rawDigits.filter { it.isDigit() }.take(8) // Limit to 8 digits
@@ -16,4 +24,14 @@ object DateUtils {
         val dayPart = digits.substring(6).take(2)
         return "$yearPart-$monthPart-$dayPart"
     }
+
+    @OptIn(ExperimentalTime::class)
+    fun getCurrentYearMonthDay(): Triple<Int, Int, Int> {
+        val now: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val year = now.year
+        val month = now.monthNumber
+        val day = now.dayOfMonth
+        return Triple(year, month, day)
+    }
+
 }

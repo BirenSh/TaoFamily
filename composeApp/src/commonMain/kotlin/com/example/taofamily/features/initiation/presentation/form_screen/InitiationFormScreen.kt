@@ -28,8 +28,10 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -40,10 +42,13 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.example.taofamily.core.ui.AppColors
+import com.example.taofamily.core.ui.ErrorDialog
 import com.example.taofamily.core.ui.FormCheckBox
 import com.example.taofamily.core.ui.FormDropdown
 import com.example.taofamily.core.ui.FormInputText
+import com.example.taofamily.core.ui.LoadingDialog
 import com.example.taofamily.core.ui.ScreenTopbar
+import com.example.taofamily.core.utils.AppConstant
 import com.example.taofamily.core.utils.DateUtils.formatRawDateString
 import com.example.taofamily.core.utils.DateVisualTransformation
 import com.example.taofamily.core.utils.UiState
@@ -78,7 +83,27 @@ class InitiationFormScreen(
 
         val submitFormState by formViewModel.submitFormState.collectAsState()
 
+        val dismissError = { formViewModel.resetSaveState() }
 
+        LoadingDialog(
+            isVisible = submitFormState is UiState.Loading,
+            labelText = "Submitting Form",
+            onDismissCall = dismissError
+
+        )
+
+        ErrorDialog(
+            isVisible = submitFormState is UiState.Error,
+            errorMessage = (submitFormState as? UiState.Error)?.errorMessage?:"Something went wrong",
+            onDismissCall = dismissError
+        )
+
+        LaunchedEffect(submitFormState){
+            if (submitFormState is UiState.Success){
+                navigator?.popUntilRoot()
+                formViewModel.resetSaveState()
+            }
+        }
 
 
         InitiationFormCompose(
@@ -87,7 +112,7 @@ class InitiationFormScreen(
             updateListener = updateListener,
             onSubmitClick= onSubmitClick,
             isFormValid,
-            submitFormState
+
 
         )
 
@@ -101,8 +126,6 @@ class InitiationFormScreen(
         updateListener: (InitiationFormFiled) -> Unit,
         onSubmitClick: () -> Unit,
         isFormValid: Boolean,
-        submitFormState: UiState<String>,
-
         ) {
 
         Scaffold(
@@ -117,6 +140,8 @@ class InitiationFormScreen(
                     )
             }
         ) { innerPadding ->
+
+
             Column(
                 modifier = Modifier.fillMaxSize()
                     .padding(innerPadding)
@@ -129,24 +154,6 @@ class InitiationFormScreen(
                     isFormValid
                 )
                 Spacer(modifier = Modifier.width(12.dp))
-
-               // show the loading or Error here
-                when(val state = submitFormState){
-                    is UiState.Success -> {
-                        onBackClick()
-                    }
-                    is UiState.Error -> {
-                        Text(
-                            text = "* Error: " + state.errorMessage,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 10.dp),
-                            color = AppColors.StatusError,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    else -> {}
-                }
 
                 ElevatedButton(
                     onClick = { onSubmitClick() },
@@ -196,7 +203,8 @@ class InitiationFormScreen(
                 placeHolder = "Member Age",
                 modifier = Modifier.weight(1f),
                 keyboardType = KeyboardType.Number,
-                icon = Icons.Default.Numbers
+                icon = Icons.Default.Numbers,
+                maxChar = 3
             )
 //                    Spacer(modifier = Modifier.width(5.dp))
 
@@ -241,7 +249,8 @@ class InitiationFormScreen(
             placeHolder = "Member Contact number",
             modifier = Modifier.fillMaxWidth(),
             keyboardType = KeyboardType.Number,
-            icon = Icons.Default.Contacts
+            icon = Icons.Default.Contacts,
+            maxChar = 10
         )
 
         //master name list
@@ -321,6 +330,7 @@ class InitiationFormScreen(
             keyboardType = KeyboardType.Number,
             icon = Icons.Default.CalendarMonth,
             visualTransformation = DateVisualTransformation(),
+            maxChar = 15
 
             )
 

@@ -1,9 +1,7 @@
 package com.example.taofamily.features.initiation.presentation.form_screen
 
-import androidx.compose.foundation.gestures.ScrollScope
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import com.example.taofamily.core.platform.getServiceAccountProvider
 import com.example.taofamily.core.utils.AppConstant
 import com.example.taofamily.core.utils.UiState
 import com.example.taofamily.features.initiation.data.repository.InitiationRepository
@@ -11,8 +9,6 @@ import com.example.taofamily.features.initiation.domain.model.Gender
 import com.example.taofamily.features.initiation.domain.model.InitiationFormFiled
 import com.example.taofamily.features.initiation.domain.model.Master
 import com.example.taofamily.features.initiation.domain.model.Temple
-import io.ktor.client.HttpClient
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,8 +24,8 @@ class InitiationFormViewModel(
     private val _isFormValid = MutableStateFlow<Boolean>(false)
     val isFormValid: StateFlow<Boolean> = _isFormValid
 
-    private val submitForm = MutableStateFlow<UiState<String>>(UiState.Ideal)
-    val submitFormState: StateFlow<UiState<String>> = submitForm.asStateFlow()
+    private val _submitFormState = MutableStateFlow<UiState<String>>(UiState.Ideal)
+    val submitFormState: StateFlow<UiState<String>> = _submitFormState.asStateFlow()
 
 
 
@@ -46,24 +42,24 @@ class InitiationFormViewModel(
             val formError = dateNumValidation(finalData)
 
             //validation check
-            if(formError.first){
-                submitForm.value = UiState.Success("Form submitted successfully")
-            } else {
-                submitForm.value = UiState.Error(formError.second)
-
+            if(!formError.first){
+                _submitFormState.value = UiState.Error(formError.second)
+                return@launch
             }
 
+
+            _submitFormState.value = UiState.Loading
             // api call and local save
             try {
                 initiationRepository.saveEntry(finalData)
                 // if no exception mean success
-                submitForm.value = UiState.Success(AppConstant.SUCCESS_RESULT)
+                _submitFormState.value = UiState.Error("Failed to Save data")
+
+//                _submitFormState.value = UiState.Success(AppConstant.SUCCESS_RESULT)
 
             }catch (e: Exception){
-                submitForm.value = UiState.Error(e.message?:"Failed to Save data")
+                _submitFormState.value = UiState.Error(e.message?:"Failed to Save data")
             }
-
-
 
         }
     }
@@ -113,5 +109,10 @@ class InitiationFormViewModel(
 
         return Pair(true, "Validation passed")
 
+    }
+
+
+    fun resetSaveState(){
+        _submitFormState.value = UiState.Ideal
     }
 }
