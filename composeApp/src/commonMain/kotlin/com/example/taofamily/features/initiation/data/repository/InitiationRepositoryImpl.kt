@@ -21,13 +21,17 @@ class InitiationRepositoryImpl(
     }
 
     override suspend fun saveEntry(entry: InitiationFormFiled) = withContext(dispatcher){
-         localDataSource.saveEntry(entry)
 
         //Asynchronously push to server
         try {
+            // remote save first
             remoteDataSource.pushEntry(entry)
-        }catch (e: Exception){
 
+            // if remote success without exception save locally
+            localDataSource.saveEntry(entry)
+
+        }catch (e: Exception){
+            throw e
         }
 
     }
