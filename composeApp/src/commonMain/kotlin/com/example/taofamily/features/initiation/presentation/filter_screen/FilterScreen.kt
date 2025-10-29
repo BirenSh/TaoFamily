@@ -54,14 +54,18 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.example.taofamily.core.ui.AppColors
 import com.example.taofamily.core.ui.ScreenTopbar
 import com.example.taofamily.core.ui.SingleSelectFilterChips
+import com.example.taofamily.core.utils.UiState
+import com.example.taofamily.features.initiation.domain.model.InitiationFormFiled
 import com.example.taofamily.features.initiation.presentation.taochin_screen.FilterState
 import com.example.taofamily.features.initiation.presentation.taochin_screen.MemberListViewModel
+import org.koin.core.qualifier.named
 
-class FilterScreen : Screen {
+class FilterScreen(
+    private val memberViewModel: MemberListViewModel
+) : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.current
-        val memberViewModel: MemberListViewModel = getScreenModel()
 
         val onBackPressed: () -> Unit = {
             navigator?.popUntilRoot()
@@ -72,6 +76,11 @@ class FilterScreen : Screen {
 
         // Local mutable states for user editing (user commits changes upon button press)
         var currentFilterState by remember { mutableStateOf(initialFilterState) }
+        val state by memberViewModel.state.collectAsState()
+        if (state is UiState.Success) {
+            val count = (state as UiState.Success<List<InitiationFormFiled>>).result.size
+            println("state count in filter: $count")
+        }
 
         FilterScreenCompose(
             currentFilterState = currentFilterState,
@@ -80,7 +89,11 @@ class FilterScreen : Screen {
                 memberViewModel.updateFilter(currentFilterState) // Send final state to ViewModel
                 navigator?.pop() // Close the filter modal
             },
-            onClearAll = { currentFilterState = FilterState() }, // Reset local state to default
+            onClearAll = {
+                currentFilterState = FilterState() //resetting to initial
+                memberViewModel.updateFilter(currentFilterState) // updating initial state
+                navigator?.pop() // return back after clear
+            }, // Reset local state to default
             onBackPressed = onBackPressed
         )
     }
@@ -132,7 +145,7 @@ class FilterScreen : Screen {
                         }
 
                         IconButton(
-                            onClick = { onClearAll() },
+                            onClick = { onApplyFilters() },
                             modifier = Modifier.weight(1f)
                                 .padding(horizontal = 10.dp)
                                 .shadow(shape = RoundedCornerShape(14.dp), elevation = 2.dp)

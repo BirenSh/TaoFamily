@@ -55,8 +55,10 @@ import com.example.taofamily.features.initiation.domain.model.InitiationFormFile
 import com.example.taofamily.features.initiation.presentation.detail_screen.MemberDetailScreen
 import com.example.taofamily.features.initiation.presentation.filter_screen.FilterScreen
 import com.example.taofamily.features.initiation.presentation.form_screen.InitiationFormScreen
+import org.koin.core.qualifier.named
 
 class MemberListScreen() : Screen {
+
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.current
@@ -65,7 +67,7 @@ class MemberListScreen() : Screen {
 
         // locally navigation action
         val onFilterScreenClick:()->Unit = {
-            navigator?.push(FilterScreen())
+            navigator?.push(FilterScreen(memberViewModel))
         }
         val onDetailScreenClick: (memberId: Long)-> Unit = {id->
             navigator?.push(MemberDetailScreen(memberId = id))

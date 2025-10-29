@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -52,6 +53,7 @@ class MemberListViewModel(
     private fun listenToFilteredEntries() {
         screenModelScope.launch {
             combine(allEntries,_searchQuery,_filterState){entries,query,filter->
+                println("===before filter: ${entries.size}")
 
                 val filteredList = entries.filter { entry ->
                     val q = query.trim().lowercase()
@@ -84,14 +86,15 @@ class MemberListViewModel(
                     }
                     // Date Filters: TRUE if filter string is NULL (default) OR if it matches the range.
                     val startDateMatch =
-                        filter.startDate.isNullOrEmpty() || entry.initiationDate >= filter.startDate
+                        filter.startDate.isNullOrEmpty() || entry.initiationDate.split("-").first() >= filter.startDate
                     val endDateMatch =
-                        filter.endDate.isNullOrEmpty() || entry.initiationDate <= filter.endDate
+                        filter.endDate.isNullOrEmpty() || entry.initiationDate.split("-").first() <= filter.endDate
 
                     searchMatch && genderMatch && templeMatch && classMatch && startDateMatch && endDateMatch
 
                 }
 
+                println("===after filter: ${filteredList.size}")
                 when{
                     filteredList.isNotEmpty()  ->_state.value =   UiState.Success(filteredList)
                     else -> _state.value =  UiState.Success(emptyList())
@@ -106,8 +109,8 @@ class MemberListViewModel(
     }
 
     fun updateFilter(filter: FilterState){
-
         _filterState.value = filter
+        println("===update: ${_filterState.value}")
     }
 
 }
