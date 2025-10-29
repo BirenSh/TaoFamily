@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,8 +19,11 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CheckboxDefaults.colors
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -37,9 +41,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
@@ -93,9 +99,6 @@ class FilterScreen : Screen {
         val genderOptions = remember { GenderFilterOptions.entries.toList() }
         val attendanceOptions = remember { AttendanceFilterOptions.entries.toList() }
         val templeOptions = remember { TempleFilterOptions.entries.toList() }
-        val startDate by remember { mutableStateOf("") }
-        val endDate by remember { mutableStateOf("") }
-
         Scaffold(
             topBar = {
                 ScreenTopbar(
@@ -105,13 +108,50 @@ class FilterScreen : Screen {
                     },
                     containerColor = AppColors.TopBarBackground
                 )
+            },
+            bottomBar = {
+                BottomAppBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    containerColor = AppColors.PureWhite
+                ){
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        IconButton(
+                            onClick = { onClearAll() },
+                            modifier = Modifier.weight(1f)
+                                .padding(horizontal = 10.dp)
+                                .shadow(shape = RoundedCornerShape(14.dp), elevation = 2.dp)
+                                .background(AppColors.WhiteSmoke),
+                        ){
+                            Text("CLEAR", style = TextStyle(fontWeight = FontWeight.Medium))
+
+                        }
+
+                        IconButton(
+                            onClick = { onClearAll() },
+                            modifier = Modifier.weight(1f)
+                                .padding(horizontal = 10.dp)
+                                .shadow(shape = RoundedCornerShape(14.dp), elevation = 2.dp)
+                                .background(AppColors.PrimaryOrange),
+                        ){
+                            Text("APPLY", style = TextStyle(fontWeight = FontWeight.Medium))
+                        }
+                    }
+                }
             }
         ) { innerPadding ->
             Column(
-                modifier = Modifier.padding(innerPadding)
-                    .padding(horizontal = 10.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .background(AppColors.WhiteSmoke)
+                    .padding(10.dp),
             ) {
-
+                //--------------------------------------Gender Filter
                 Text(
                     text = "Gender",
                     color = AppColors.HintColor,
@@ -134,7 +174,7 @@ class FilterScreen : Screen {
 
                 HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp))
 
-                //is 2 Days Dharma meeting Attended filter
+                ////--------------------------------------is 2 Days Dharma meeting Attended filter
                 Text(
                     text = "Is 2 Days Dharma Meeting Attended ?",
                     color = AppColors.HintColor,
@@ -157,7 +197,7 @@ class FilterScreen : Screen {
 
                 HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp))
 
-                //Temple filter
+                ////--------------------------------------Temple filter
                 Text(
                     text = "Temple Filter",
                     color = AppColors.HintColor,
@@ -173,7 +213,7 @@ class FilterScreen : Screen {
 
                 HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp))
 
-                //Date Range filter
+                ////--------------------------------------Date Range filter
                 Text(
                     text = "Year Range Filter",
                     color = AppColors.HintColor,
@@ -184,32 +224,32 @@ class FilterScreen : Screen {
                     modifier = Modifier.fillMaxWidth(),
                 ) {
 
-                    // input for year
+                    // input for start year
                     YearRangeInput(
                         dateValue = currentFilterState.startDate.orEmpty(),
                         label = "Start Year",
                         modifier = Modifier.padding(vertical = 10.dp),
-                        onValueChange = { it ->
-                            if (it.length <=4)
-                            onUpdateFilter(currentFilterState.copy(startDate = it))
+                        onValueChange = { date ->
+                            val sanitizedRawDigits = date.filter { it.isDigit() }.take(4)
+                                onUpdateFilter(currentFilterState.copy(startDate = sanitizedRawDigits))
                         }
                     )
 
                     Spacer(modifier = Modifier.width(20.dp))
 
-                    //input for year
+                    //input for end year
                     YearRangeInput(
                         dateValue = currentFilterState.endDate.orEmpty(),
                         label = "End Year",
                         modifier = Modifier.padding(vertical = 10.dp),
-                        onValueChange = {
-                            if (it.length <=4){
+                        onValueChange = {date->
+                            val sanitizedRawDigits = date.filter { it.isDigit() }.take(4)
+                                onUpdateFilter(currentFilterState.copy(endDate = sanitizedRawDigits))
 
-                            onUpdateFilter(currentFilterState.copy(endDate = it))
-                            }
                         }
                     )
                 }
+
 
             }
         }
@@ -250,10 +290,9 @@ fun YearRangeInput(
         // 2. The Basic Input Component
         BasicTextField(
             value = dateValue,
-            onValueChange = onValueChange,
-            modifier = Modifier.padding(vertical =10.dp)
-,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            onValueChange =  onValueChange ,
+            modifier = Modifier.padding(vertical =10.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,imeAction = ImeAction.Done),
             textStyle = TextStyle(fontWeight = FontWeight.Medium)
         )
     }

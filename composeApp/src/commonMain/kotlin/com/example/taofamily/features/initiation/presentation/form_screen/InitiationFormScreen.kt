@@ -36,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
@@ -330,7 +331,8 @@ class InitiationFormScreen(
             keyboardType = KeyboardType.Number,
             icon = Icons.Default.CalendarMonth,
             visualTransformation = DateVisualTransformation(),
-            maxChar = 15
+            maxChar = 15,
+            imeAction = ImeAction.Done
 
             )
 

@@ -66,6 +66,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -184,6 +185,7 @@ fun FormInputText(
     keyboardType: KeyboardType = KeyboardType.Text,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     maxChar: Int = 100,
+    imeAction: ImeAction = ImeAction.Next
 ){
     TextField(
         value = value,
@@ -207,7 +209,7 @@ fun FormInputText(
                 shape = RoundedCornerShape(18.dp)
             ),
         shape = RoundedCornerShape(18.dp),
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
         colors = TextFieldDefaults.colors(
             focusedContainerColor = AppColors.PureWhite,
             disabledContainerColor = AppColors.PureWhite,
@@ -221,7 +223,6 @@ fun FormInputText(
         singleLine = true,
         visualTransformation = visualTransformation,
         maxLines = maxChar,
-
     )
 }
 
