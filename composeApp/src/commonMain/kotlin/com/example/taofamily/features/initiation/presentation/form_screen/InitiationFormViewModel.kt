@@ -18,8 +18,8 @@ class InitiationFormViewModel(
     private val initiationRepository: InitiationRepository,
 
 ) : ScreenModel {
-    private val _form = MutableStateFlow(InitiationFormFiled.empty())
-    val formData: StateFlow<InitiationFormFiled> = _form.asStateFlow()
+    private val _formData = MutableStateFlow(InitiationFormFiled.empty())
+    val formData: StateFlow<InitiationFormFiled> = _formData.asStateFlow()
 
     private val _isFormValid = MutableStateFlow<Boolean>(false)
     val isFormValid: StateFlow<Boolean> = _isFormValid
@@ -30,15 +30,16 @@ class InitiationFormViewModel(
 
 
     fun updateForm(newEntry: InitiationFormFiled) {
-        _form.value = newEntry
+        _formData.value = newEntry
 
 //        validate each form on typing
-        _isFormValid.value = formValidation(_form.value)
+        _isFormValid.value = formValidation(_formData.value)
     }
 
     fun onSubmitClick() {
         screenModelScope.launch {
-            val finalData = _form.value
+            updateForm(newEntry = _formData.value.copy(personId = AppConstant.getRandomUniqueId()))
+            val finalData = _formData.value
             val formError = dateNumValidation(finalData)
 
             //validation check
@@ -53,9 +54,7 @@ class InitiationFormViewModel(
             try {
                 initiationRepository.saveEntry(finalData)
                 // if no exception mean success
-                _submitFormState.value = UiState.Error("Failed to Save data")
-
-//                _submitFormState.value = UiState.Success(AppConstant.SUCCESS_RESULT)
+                _submitFormState.value = UiState.Success(AppConstant.SUCCESS_RESULT)
 
             }catch (e: Exception){
                 _submitFormState.value = UiState.Error(e.message?:"Failed to Save data")

@@ -40,6 +40,8 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -415,6 +417,35 @@ fun LoadingDialog(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun <T> SingleSelectFilterChips(
+    options: List<T>,
+    selected: T,
+    onSelectionChange: (T) -> Unit
+) where T : InternalLabelled, T : Any {
+
+    options.forEach { option ->
+        FilterChip(
+            selected = option == selected,
+            onClick = { onSelectionChange(option) },
+            label = { Text(option.label) },
+            // Use a simple primary color variant for selection
+            colors = FilterChipDefaults.filterChipColors(
+                selectedContainerColor = AppColors.PrimaryOrange.copy(alpha = 0.8f),
+                selectedLabelColor = Color.Black
+            ),
+            trailingIcon = {
+                if (option == selected){
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Selected"
+                    )
+                }
+            }
+        )
     }
 }
 

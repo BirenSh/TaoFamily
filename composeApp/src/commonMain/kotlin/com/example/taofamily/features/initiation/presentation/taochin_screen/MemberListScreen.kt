@@ -19,6 +19,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Dataset
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +31,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -101,6 +106,12 @@ class MemberListScreen() : Screen {
 
         ) {
 
+        var count = 0
+        if (currentState is UiState.Success){
+            count = (currentState ).result.size
+        }
+
+
         Scaffold(
             topBar = {
                 ScreenTopbar(
@@ -109,6 +120,41 @@ class MemberListScreen() : Screen {
                     trailingIcon = Icons.Default.Add,
                     onActionClick = {
                         onInitiationFormScreen()
+                    }
+                )
+            },
+            bottomBar = {
+
+                BottomAppBar(
+                    containerColor = AppColors.TopBarBackground,
+                    contentColor = AppColors.PrimaryBlack,
+                    modifier = Modifier.height(100.dp),
+                    content = {
+                       Row(modifier = Modifier.fillMaxWidth(),
+                           horizontalArrangement = Arrangement.SpaceAround) {
+                           IconButton(
+                               onClick = {}
+                           ){
+                               Icon(
+                                   imageVector = Icons.Default.Home,
+                                   contentDescription = "Item list",
+                                   tint = Color.White
+                               )
+                           }
+                           IconButton(
+                               onClick = onFilterScreenClick
+                           ){
+                               Icon(
+                                   imageVector = Icons.Default.FilterList,
+                                   contentDescription = "Filter"
+                               )
+                           }
+
+                           TextButton(onClick = {}){
+                               Text(count.toString(), color = Color.Black)
+                           }
+
+                       }
                     }
                 )
             }

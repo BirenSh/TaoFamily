@@ -20,4 +20,5 @@ object AppColors{
     val PureWhite = Color(0xFFFFFFFF) //lightOrange
     val MemberCardBorder = Color(0xFFFFEFD5) //lightOrange
     val DisabledColor = Color.LightGray
+    val HintColor = Color.LightGray
 }
