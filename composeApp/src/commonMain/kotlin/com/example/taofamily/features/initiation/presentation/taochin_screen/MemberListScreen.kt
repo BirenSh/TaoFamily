@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -70,16 +71,17 @@ class MemberListScreen() : Screen {
             navigator?.push(InitiationFormScreen(entry = null))
         }
 
+        val onSettingClick : ()-> Unit = {
+            memberViewModel.logoutApp()
+            navigator?.replaceAll(LoginScreen())
+        }
+
         val searchQuery by memberViewModel.searchQuery.collectAsState()
 
         val onSearchQueryChange: (String) -> Unit = {
             memberViewModel.updateSearchQuery(it)
         }
 
-        val logoutApp : () -> Unit = {
-            memberViewModel.logoutApp()
-            navigator?.replaceAll(LoginScreen())
-        }
 
 
         val state by memberViewModel.state.collectAsState()
@@ -92,7 +94,7 @@ class MemberListScreen() : Screen {
             searchQuery = searchQuery,
             onSearchQueryChange = onSearchQueryChange,
             currentState = state,
-            logoutApp = logoutApp
+            onSettingClick = onSettingClick
         )
     }
 
@@ -105,7 +107,7 @@ class MemberListScreen() : Screen {
         onSearchQueryChange: (String) -> Unit,
         currentState: UiState<List<InitiationFormFiled>>,
         searchQuery: String,
-        logoutApp: () -> Unit,
+        onSettingClick: () -> Unit,
 
         ) {
 
@@ -153,9 +155,16 @@ class MemberListScreen() : Screen {
                                )
                            }
 
-                           TextButton(onClick = {
-                               logoutApp()
-                           }){
+                           IconButton(
+                               onClick = onSettingClick
+                           ){
+                               Icon(
+                                   imageVector = Icons.Default.Settings,
+                                   contentDescription = "Setting"
+                               )
+                           }
+
+                           TextButton(onClick = {}){
                                Text(count.toString(), color = Color.Black)
                            }
 

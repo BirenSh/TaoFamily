@@ -15,19 +15,13 @@ import kotlinx.coroutines.withContext
 
 class SyncViewModel(
     private val initiationRepository: InitiationRepository,
-): ScreenModel {
+) : ScreenModel {
 
 
     private val _isFirstTimeSyncComplete = MutableStateFlow<UiState<Boolean>>(UiState.Ideal)
     val isFirstTimeSyncComplete = _isFirstTimeSyncComplete.asStateFlow()
 
-
-//
-//    init {
-//        startSyncProcess()
-//    }
-
-    fun startSyncProcess(){
+    fun startSyncProcess() {
         screenModelScope.launch {
 
             try {
@@ -35,20 +29,17 @@ class SyncViewModel(
 
                 initiationRepository.syncInitialData()
                 _isFirstTimeSyncComplete.value = UiState.Success(true)
-//                _isFirstTimeSyncComplete.value = UiState.Error("Sync Failed")
-
-
                 println("===sync complete")
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 println("===syncFailed: ${e.message}")
-                _isFirstTimeSyncComplete.value = UiState.Error(e.message?:"Sync Failed")
+                _isFirstTimeSyncComplete.value = UiState.Error(e.message ?: "Sync Failed")
             }
         }
         CoroutineScope(Dispatchers.IO).launch {
         }
     }
 
-    fun resetState(){
+    fun resetState() {
         _isFirstTimeSyncComplete.value = UiState.Ideal
 
     }
