@@ -33,17 +33,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.example.taofamily.core.ui.TaoFamilyTheme
+import com.example.taofamily.features.initiation.presentation.syncScreen.FirstTimeSyncScreen
 import com.example.taofamily.features.initiation.presentation.taochin_screen.MemberListScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
-class LoginScreen: Screen {
+class LoginScreen(val loginViewModel: LoginViewModel?= null) : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.current
         LoginScreenCompose(
             onLoginSuccess = {
-                navigator?.replace(MemberListScreen())
+                loginViewModel?.setIsLoggedIn(true)
+                navigator?.replace(FirstTimeSyncScreen())
             }
         )
     }

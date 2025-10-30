@@ -6,7 +6,8 @@ interface InitRemoteDataSource {
     suspend fun fetchAllEntries(): List<InitiationFormFiled>
 
     suspend fun pushEntry(entry: InitiationFormFiled)
+    suspend fun updateEntry(entry: InitiationFormFiled)
 
-    suspend fun deleteEntry(id: Long)
+    suspend fun deleteEntry(id: String)
 
 }

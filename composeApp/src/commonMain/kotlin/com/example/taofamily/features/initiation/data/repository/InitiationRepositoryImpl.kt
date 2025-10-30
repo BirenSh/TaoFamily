@@ -36,12 +36,12 @@ class InitiationRepositoryImpl(
 
     }
 
-    override suspend fun deleteEntry(id: Long)  = withContext(dispatcher){
+    override suspend fun deleteEntry(id: String)  = withContext(dispatcher){
         localDataSource.deleteEntry(id)
         try {
             remoteDataSource.deleteEntry(id)
         }catch (e: Exception){
-
+            throw e
         }
     }
 
@@ -52,7 +52,22 @@ class InitiationRepositoryImpl(
                 localDataSource.replaceAllEntries(fetchData)
             }
         }catch (e: Exception){
-
+            throw e
         }
+    }
+
+    override suspend fun updateEntry(entry: InitiationFormFiled) {
+        //Asynchronously push to server
+        try {
+            // remote save first
+            remoteDataSource.updateEntry(entry)
+
+            // if remote success without exception save locally
+            localDataSource.updateEntry(entry)
+
+        }catch (e: Exception){
+            throw e
+        }
+
     }
 }

@@ -7,7 +7,9 @@ import io.ktor.client.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.*
+import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
@@ -23,6 +25,9 @@ val networkModule: Module = module {
                     ignoreUnknownKeys = true
                     prettyPrint = true
                 })
+            }
+            defaultRequest {
+                header(io.ktor.http.HttpHeaders.Accept, io.ktor.http.ContentType.Application.Json)
             }
             install(Logging) {
                 level = LogLevel.INFO
@@ -40,7 +45,7 @@ val networkModule: Module = module {
     }
 
     // Main HttpClient with auto-auth
-    single {
+    single(qualifier = named("apiClient")) {
         val auth: ServiceAccountAuth = get()
 
         HttpClient {

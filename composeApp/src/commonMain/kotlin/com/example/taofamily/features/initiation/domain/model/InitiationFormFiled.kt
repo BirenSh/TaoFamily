@@ -3,7 +3,6 @@ package com.example.taofamily.features.initiation.domain.model
 import kotlinx.serialization.Serializable
 
 data class InitiationFormFiled(
-    val id: Long, // Primary key
     val personId: String,
     val personName: String,
     val personAge: Int, // Numeric
@@ -24,7 +23,6 @@ data class InitiationFormFiled(
     companion object{
         fun empty(): InitiationFormFiled{
             return InitiationFormFiled(
-                id = 0L, // 0L conventionally means a new entry
                 personId = "",
                 personName = "",
                 personAge = 0,
@@ -46,7 +44,6 @@ data class InitiationFormFiled(
         fun dummyData(): List<InitiationFormFiled> {
             return listOf(
                 InitiationFormFiled(
-                    id = 1L,
                     personId = "P001",
                     personName = "John Doe",
                     personAge = 35,
@@ -64,7 +61,6 @@ data class InitiationFormFiled(
                     dharmaMeetingDate = "2023-01-10"
                 ),
                 InitiationFormFiled(
-                    id = 2L,
                     personId = "P002",
                     personName = "Alice Williams",
                     personAge = 28,

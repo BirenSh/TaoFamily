@@ -8,7 +8,9 @@ interface InitLocalDataSource {
 
     suspend fun saveEntry(entry: InitiationFormFiled)
 
-    suspend fun deleteEntry(id: Long)
+    suspend fun updateEntry(entry: InitiationFormFiled)
+
+    suspend fun deleteEntry(id: String)
 
     suspend fun replaceAllEntries(entries: List<InitiationFormFiled>)
 

@@ -20,7 +20,6 @@ class InitLocalDataSourceImpl(
     // Map from SQLDelight Initiation to domain InitiationFormFiled
     private fun mapToDomain(dbRecord: com.example.taofamily.db.Initiation): InitiationFormFiled {
         return InitiationFormFiled(
-            id = dbRecord.id,
             personId = dbRecord.personId,
             personName = dbRecord.personName,
             personAge = dbRecord.personAge.toInt(), // Long → Int
@@ -51,8 +50,6 @@ class InitLocalDataSourceImpl(
     override suspend fun saveEntry(entry: InitiationFormFiled) {
 
         queries.transaction {
-            if (entry.id == 0L) {
-                // Insert new entry
                 queries.insert(
                     personId = entry.personId,
                     personName = entry.personName,
@@ -70,34 +67,36 @@ class InitLocalDataSourceImpl(
                     is2DaysDharmaClassAttend = entry.is2DaysDharmaClassAttend, // Boolean
                     dharmaMeetingDate = entry.dharmaMeetingDate
                 )
-
-            } else {
-                // Update existing entry
-                queries.update(
-                    personId = entry.personId,
-                    personName = entry.personName,
-                    personAge = entry.personAge.toLong(),
-                    contact = entry.contact,
-                    gender = entry.gender,
-                    education = entry.education,
-                    fullAddress = entry.fullAddress,
-                    masterName = entry.masterName,
-                    introducerName = entry.introducerName,
-                    guarantorName = entry.guarantorName,
-                    templeName = entry.templeName,
-                    initiationDate = entry.initiationDate,
-                    meritFee = entry.meritFee,
-                    is2DaysDharmaClassAttend = entry.is2DaysDharmaClassAttend,
-                    dharmaMeetingDate = entry.dharmaMeetingDate,
-                    id = entry.id
-                )
-            }
             // Verify the save
             val count = queries.countAll().executeAsOne()
         }
     }
 
-    override suspend fun deleteEntry(id: Long) {
+    override suspend fun updateEntry(entry: InitiationFormFiled) {
+        queries.transaction {
+            queries.update(
+                personId = entry.personId,
+                personName = entry.personName,
+                personAge = entry.personAge.toLong(), // Int → Long
+                contact = entry.contact,
+                gender = entry.gender, // Enum (adapter handles conversion)
+                education = entry.education,
+                fullAddress = entry.fullAddress,
+                masterName = entry.masterName, // Enum
+                introducerName = entry.introducerName,
+                guarantorName = entry.guarantorName,
+                templeName = entry.templeName, // Enum
+                initiationDate = entry.initiationDate,
+                meritFee = entry.meritFee,
+                is2DaysDharmaClassAttend = entry.is2DaysDharmaClassAttend, // Boolean
+                dharmaMeetingDate = entry.dharmaMeetingDate
+            )
+            // Verify the save
+            val count = queries.countAll().executeAsOne()
+        }
+    }
+
+    override suspend fun deleteEntry(id: String) {
         queries.deleteById(id)
     }
 

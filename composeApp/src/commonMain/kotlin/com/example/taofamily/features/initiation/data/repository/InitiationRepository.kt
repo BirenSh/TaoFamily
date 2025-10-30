@@ -22,7 +22,7 @@ interface InitiationRepository {
      * D - Delete Operation: Deletes the entry locally first, then asynchronously
      * deletes it from the remote Google Sheet.
      */
-    suspend fun deleteEntry(id: Long)
+    suspend fun deleteEntry(id: String)
 
 
     /**
@@ -31,6 +31,9 @@ interface InitiationRepository {
      * This is called immediately after a successful login.
      */
     suspend fun syncInitialData()
+
+
+    suspend fun updateEntry(entry: InitiationFormFiled)
 
 
 }

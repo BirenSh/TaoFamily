@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.taofamily.core.utils.UiState
+import com.example.taofamily.features.initiation.data.local.SettingPreFrance
 import com.example.taofamily.features.initiation.data.repository.InitiationRepository
-import com.example.taofamily.features.initiation.data.repository.InitiationRepositoryImpl
 import com.example.taofamily.features.initiation.domain.model.Gender
 import com.example.taofamily.features.initiation.domain.model.InitiationFormFiled
 import com.example.taofamily.features.initiation.domain.model.Temple
@@ -32,7 +32,8 @@ import kotlinx.coroutines.withContext
 import kotlin.collections.emptyList
 
 class MemberListViewModel(
-    private val initiationRepository: InitiationRepository
+    private val initiationRepository: InitiationRepository,
+    private val settingPreFrance: SettingPreFrance
 ) : ScreenModel{
 
 
@@ -53,7 +54,6 @@ class MemberListViewModel(
     private fun listenToFilteredEntries() {
         screenModelScope.launch {
             combine(allEntries,_searchQuery,_filterState){entries,query,filter->
-                println("===before filter: ${entries.size}")
 
                 val filteredList = entries.filter { entry ->
                     val q = query.trim().lowercase()
@@ -94,7 +94,6 @@ class MemberListViewModel(
 
                 }
 
-                println("===after filter: ${filteredList.size}")
                 when{
                     filteredList.isNotEmpty()  ->_state.value =   UiState.Success(filteredList)
                     else -> _state.value =  UiState.Success(emptyList())
@@ -111,6 +110,12 @@ class MemberListViewModel(
     fun updateFilter(filter: FilterState){
         _filterState.value = filter
         println("===update: ${_filterState.value}")
+    }
+
+    fun logoutApp(){
+        screenModelScope.launch {
+            settingPreFrance.setIsLoggedIn(false)
+        }
     }
 
 }

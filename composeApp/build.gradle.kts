@@ -97,6 +97,7 @@ kotlin {
             implementation(libs.voyager.navigator)       // Core navigation components
             implementation(libs.voyager.screen.model)    // Lifecycle management for ViewModels/ScreenModels
             implementation(libs.voyager.koin)
+            implementation(libs.mp.settings.noarg) //share preference for kmp
 
         }
         val iosMain by creating {

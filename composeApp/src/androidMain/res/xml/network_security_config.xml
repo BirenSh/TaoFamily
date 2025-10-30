@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- Trust system certificates and user-added certificates -->
+
     <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
             <certificates src="system" />
@@ -8,13 +8,16 @@
         </trust-anchors>
     </base-config>
 
-    <!-- Trust Google's OAuth and API domains -->
-    <domain-config cleartextTrafficPermitted="false">
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+        <domain includeSubdomains="true">localhost</domain>
+    </domain-config>
+
+    <domain-config>
         <domain includeSubdomains="true">googleapis.com</domain>
         <domain includeSubdomains="true">oauth2.googleapis.com</domain>
         <domain includeSubdomains="true">accounts.google.com</domain>
-        <trust-anchors>
-            <certificates src="system" />
-        </trust-anchors>
     </domain-config>
+
 </network-security-config>

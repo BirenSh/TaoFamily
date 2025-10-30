@@ -3,7 +3,6 @@ package com.example.taofamily.features.initiation.presentation.taochin_screen
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -19,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.BottomAppBar
@@ -32,8 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
@@ -50,12 +45,11 @@ import com.example.taofamily.core.ui.AppColors
 import com.example.taofamily.core.ui.AppSearchBar
 import com.example.taofamily.core.ui.ScreenTopbar
 import com.example.taofamily.core.utils.UiState
-import com.example.taofamily.features.initiation.domain.model.Gender
 import com.example.taofamily.features.initiation.domain.model.InitiationFormFiled
 import com.example.taofamily.features.initiation.presentation.detail_screen.MemberDetailScreen
 import com.example.taofamily.features.initiation.presentation.filter_screen.FilterScreen
 import com.example.taofamily.features.initiation.presentation.form_screen.InitiationFormScreen
-import org.koin.core.qualifier.named
+import com.example.taofamily.features.initiation.presentation.login_screen.LoginScreen
 
 class MemberListScreen() : Screen {
 
@@ -69,7 +63,7 @@ class MemberListScreen() : Screen {
         val onFilterScreenClick:()->Unit = {
             navigator?.push(FilterScreen(memberViewModel))
         }
-        val onDetailScreenClick: (memberId: Long)-> Unit = {id->
+        val onDetailScreenClick: (memberId: String)-> Unit = {id->
             navigator?.push(MemberDetailScreen(memberId = id))
         }
         val onInitiationFormScreen: () -> Unit = {
@@ -82,6 +76,11 @@ class MemberListScreen() : Screen {
             memberViewModel.updateSearchQuery(it)
         }
 
+        val logoutApp : () -> Unit = {
+            memberViewModel.logoutApp()
+            navigator?.replaceAll(LoginScreen())
+        }
+
 
         val state by memberViewModel.state.collectAsState()
 
@@ -92,7 +91,8 @@ class MemberListScreen() : Screen {
             onInitiationFormScreen = onInitiationFormScreen,
             searchQuery = searchQuery,
             onSearchQueryChange = onSearchQueryChange,
-            currentState = state
+            currentState = state,
+            logoutApp = logoutApp
         )
     }
 
@@ -100,11 +100,12 @@ class MemberListScreen() : Screen {
     @Composable
     fun MemberListScreenCompose(
         onFilterScreenClick: () -> Unit,
-        onDetailScreenClick: (Long) -> Unit,
+        onDetailScreenClick: (String) -> Unit,
         onInitiationFormScreen: () -> Unit,
         onSearchQueryChange: (String) -> Unit,
         currentState: UiState<List<InitiationFormFiled>>,
         searchQuery: String,
+        logoutApp: () -> Unit,
 
         ) {
 
@@ -152,7 +153,9 @@ class MemberListScreen() : Screen {
                                )
                            }
 
-                           TextButton(onClick = {}){
+                           TextButton(onClick = {
+                               logoutApp()
+                           }){
                                Text(count.toString(), color = Color.Black)
                            }
 
@@ -213,13 +216,13 @@ class MemberListScreen() : Screen {
     @Composable
     fun MemberCard(
         member: InitiationFormFiled,
-        onDetailScreenClick: (Long) -> Unit
+        onDetailScreenClick: (String) -> Unit
     ) {
         Card(
-            onClick = {onDetailScreenClick(member.id)},
+            onClick = {onDetailScreenClick(member.personId)},
             modifier = Modifier.fillMaxWidth().padding(5.dp),
             colors = CardDefaults.cardColors(
-                containerColor = AppColors.TopBarBackground,
+                containerColor = AppColors.MemberCardBorder,
             ),
             elevation = CardDefaults.cardElevation(2.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
