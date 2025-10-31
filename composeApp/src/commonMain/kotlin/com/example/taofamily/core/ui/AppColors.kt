@@ -21,4 +21,8 @@ object AppColors{
     val MemberCardBorder = Color(0xFFFFEFD5) //lightOrange
     val DisabledColor = Color.LightGray
     val HintColor = Color.LightGray
+
+    val Orange = Color(0xFFFFA726) // orange
+    val DeepOrange = Color(0xFFFF7043)  // deep orange
+
 }

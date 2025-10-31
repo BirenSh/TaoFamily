@@ -56,6 +56,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -87,6 +88,7 @@ fun ScreenTopbar(
     onBack:(()-> Unit)? = null,
     onActionClick: (()-> Unit)? = null,
     trailingIcon: ImageVector?= null,
+    scrollBehavior: TopAppBarScrollBehavior? = null
 
 ){
     TopAppBar(
@@ -131,7 +133,9 @@ fun ScreenTopbar(
                     )
                 }
             }
-        }
+        },
+        scrollBehavior = scrollBehavior
+
 
     )
 }

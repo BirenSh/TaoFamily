@@ -34,6 +34,7 @@ interface InitiationRepository {
 
 
     suspend fun updateEntry(entry: InitiationFormFiled)
+    suspend fun getEntryById(id: String): InitiationFormFiled?
 
 
 }

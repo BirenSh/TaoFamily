@@ -3,9 +3,7 @@ package com.example.taofamily.features.initiation.data.repository
 import com.example.taofamily.features.initiation.data.local.InitLocalDataSource
 import com.example.taofamily.features.initiation.data.remote.InitRemoteDataSource
 import com.example.taofamily.features.initiation.domain.model.InitiationFormFiled
-import com.example.taofamily.features.initiation.data.repository.InitiationRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
@@ -70,4 +68,11 @@ class InitiationRepositoryImpl(
         }
 
     }
+
+    override suspend fun getEntryById(id: String): InitiationFormFiled? {
+        return localDataSource.getEntryById(id = id)
+
+    }
+
+
 }

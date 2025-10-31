@@ -1,6 +1,7 @@
 package com.example.taofamily.features.initiation.presentation.form_screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,8 +26,10 @@ import androidx.compose.material.icons.filled.Workspaces
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -120,6 +124,7 @@ class InitiationFormScreen(
 
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun InitiationFormCompose(
         onBackClick: () -> Unit,
@@ -128,8 +133,9 @@ class InitiationFormScreen(
         onSubmitClick: () -> Unit,
         isFormValid: Boolean,
         ) {
-
+        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
         Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 ScreenTopbar(
                     title = "Initiation Form",
@@ -137,14 +143,15 @@ class InitiationFormScreen(
                         onBackClick()
                     },
                     containerColor = AppColors.TopBarBackground,
+                    scrollBehavior = scrollBehavior
+
 
                     )
             }
         ) { innerPadding ->
 
-
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxWidth()
                     .padding(innerPadding)
                     .verticalScroll(state = rememberScrollState())
                     .background(AppColors.WhiteSmoke)

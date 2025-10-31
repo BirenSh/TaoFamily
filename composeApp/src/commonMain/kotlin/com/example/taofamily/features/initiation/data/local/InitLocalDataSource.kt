@@ -13,6 +13,7 @@ interface InitLocalDataSource {
     suspend fun deleteEntry(id: String)
 
     suspend fun replaceAllEntries(entries: List<InitiationFormFiled>)
+    suspend fun getEntryById(id: String): InitiationFormFiled?
 
 
 }

@@ -124,4 +124,13 @@ class InitLocalDataSourceImpl(
             }
         }
     }
+
+    override suspend fun getEntryById(id: String) : InitiationFormFiled?{
+        val record = queries
+            .selectByPersonId(id)
+            .executeAsOneOrNull() // CRITICAL: Executes the query once
+
+        // 2. Map the resulting database record to your Domain Entity.
+        return record?.let { mapToDomain(it) }
+    }
 }

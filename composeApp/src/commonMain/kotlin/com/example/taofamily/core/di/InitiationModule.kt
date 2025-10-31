@@ -9,6 +9,7 @@ import com.example.taofamily.features.initiation.data.remote.InitRemoteDataSourc
 import com.example.taofamily.features.initiation.data.remote.InitRemoteDataSourceImpl
 import com.example.taofamily.features.initiation.data.repository.InitiationRepositoryImpl
 import com.example.taofamily.features.initiation.data.repository.InitiationRepository
+import com.example.taofamily.features.initiation.presentation.detail_screen.DetailViewModel
 import com.example.taofamily.features.initiation.presentation.form_screen.InitiationFormViewModel
 import com.example.taofamily.features.initiation.presentation.login_screen.LoginViewModel
 import com.example.taofamily.features.initiation.presentation.syncScreen.SyncViewModel
@@ -67,6 +68,10 @@ val initiationModule: Module = module{
     factory {
         SyncViewModel(initiationRepository = get())
 
+    }
+
+    factory {
+        DetailViewModel(initiateRepository = get())
     }
 
 

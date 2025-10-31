@@ -60,6 +60,8 @@ class InitRemoteDataSourceImpl(
             // 3. Extract the nested list of values (rows), skip header (Row 1)
             val sheetRows = parsed.values?.drop(1) ?: return emptyList()
 
+             println("===jsonrow: ${parsed.values}")
+
             // 4. Map each JSON row into your InitiationFormFiled entity
              sheetRows.mapNotNull { row ->
                 mapRowToDomain(row)
@@ -126,9 +128,9 @@ class InitRemoteDataSourceImpl(
                 personId = rowData.getOrNull(0) ?: "",
                 personName = rowData.getOrNull(1) ?: "",
                 personAge = rowData.getOrNull(2)?.toIntOrNull() ?: 0,
-                contact = rowData.getOrNull(3) ?: "",
-                gender = Gender.entries.find { it.label.equals(rowData.getOrNull(4), true) } ?: Gender.NONE,
-                education = rowData.getOrNull(5) ?: "",
+                gender = Gender.entries.find { it.label.equals(rowData.getOrNull(3), true) } ?: Gender.NONE,
+                education = rowData.getOrNull(4) ?: "",
+                contact = rowData.getOrNull(5) ?: "",
                 fullAddress = rowData.getOrNull(6) ?: "",
                 masterName = Master.entries.find { it.label.equals(rowData.getOrNull(7), true) } ?: Master.NONE,
                 introducerName = rowData.getOrNull(8) ?: "",
@@ -137,7 +139,7 @@ class InitRemoteDataSourceImpl(
                 initiationDate = rowData.getOrNull(11) ?: "",
                 meritFee = rowData.getOrNull(12)?.toDoubleOrNull() ?: 0.0,
                 is2DaysDharmaClassAttend = rowData.getOrNull(13)?.toBooleanStrictOrNull() ?: false,
-                dharmaMeetingDate = rowData.getOrNull(14) ?: ""
+                dharmaMeetingDate = rowData.getOrNull(14) ?: "NA"
             )
         } catch (e: Exception) {
             println("MAPPING FAILED for row: $rowData. Error: ${e.message}")
