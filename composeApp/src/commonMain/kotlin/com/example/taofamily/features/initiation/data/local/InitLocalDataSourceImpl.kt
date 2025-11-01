@@ -34,7 +34,8 @@ class InitLocalDataSourceImpl(
             initiationDate = dbRecord.initiationDate,
             meritFee = dbRecord.meritFee,
             is2DaysDharmaClassAttend = dbRecord.is2DaysDharmaClassAttend, // Already Boolean
-            dharmaMeetingDate = dbRecord.dharmaMeetingDate
+            dharmaMeetingDate = dbRecord.dharmaMeetingDate,
+            sheetRowIndex = dbRecord.sheetRowIndex
         )
     }
 

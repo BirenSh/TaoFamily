@@ -2,6 +2,7 @@ package com.example.taofamily.features.initiation.data.remote
 
 import com.example.taofamily.core.platform.auth.ServiceAccountAuth
 import com.example.taofamily.core.utils.DateUtils
+import com.example.taofamily.core.utils.Helper
 import com.example.taofamily.core.utils.Helper.extractStartRowFromRange
 import com.example.taofamily.features.initiation.domain.model.AppendResponse
 import com.example.taofamily.features.initiation.domain.model.Gender
@@ -114,12 +115,10 @@ class InitRemoteDataSourceImpl(
         val token = auth.getAccessToken()
         val rowValues = mapToSheetRow(entry).map { it.toString() }
 
-        // Find row index by personId
-        val allEntries = fetchAllEntries()
-        val rowIndex = allEntries.indexOfFirst { it.personId == entry.personId }
-        if (rowIndex == -1) throw Exception("Entry with ID ${entry.personId} not found in sheet")
+        val rowIndex = entry.sheetRowIndex
+        if (rowIndex == null) throw Exception("Entry with ID ${entry.personId} not found in sheet")
 
-        val sheetRowIndex = rowIndex + 2 // +1 header, +1 index starts at 1
+        val sheetRowIndex = rowIndex
         val jsonBody = SheetsRequestDto(
             majorDimension = "ROWS",
             values = listOf(rowValues)
@@ -157,6 +156,7 @@ class InitRemoteDataSourceImpl(
         fun JsonElement?.safeString(): String = (this?.toString()?.trim('"') ?: "").trim()
         val rowData = row.map { it.safeString() }
 
+        println("===name: ${rowData.getOrNull(1)} and check: ${ rowData.getOrNull(13)?.toBooleanStrictOrNull()} ")
         return try {
             InitiationFormFiled(
                 personId = rowData.getOrNull(0) ?: "",
@@ -172,7 +172,10 @@ class InitRemoteDataSourceImpl(
                 templeName = Temple.entries.find { it.label.equals(rowData.getOrNull(10), true) } ?: Temple.NONE,
                 initiationDate = rowData.getOrNull(11) ?: "",
                 meritFee = rowData.getOrNull(12)?.toDoubleOrNull() ?: 0.0,
-                is2DaysDharmaClassAttend = rowData.getOrNull(13)?.toBooleanStrictOrNull() ?: false,
+                is2DaysDharmaClassAttend = when (rowData.getOrNull(13)?.trim()?.lowercase()) {
+                    "true", "yes", "1" -> true
+                    else -> false
+                },
                 dharmaMeetingDate = rowData.getOrNull(14) ?: "NA",
                 sheetRowIndex = rowData.getOrNull(15)?.toLongOrNull()
             )
