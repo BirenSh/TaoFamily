@@ -99,7 +99,8 @@ kotlin {
             implementation(libs.voyager.koin)
             implementation(libs.mp.settings.noarg) //share preference for kmp
 
-
+            implementation("dev.icerock.moko:resources:0.24.0")
+            implementation("dev.icerock.moko:resources-compose:0.24.0")
         }
         val iosMain by creating {
             dependencies{

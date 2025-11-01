@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Tao Family</string>
+
+    <string name="settings_title">Settings</string>
+
+    <!-- ===== Language Names ===== -->
+    <string name="greeting">Hello!</string>
+    <string name="language_app_name">Tao Family</string>
+    <string name="language_label">Language</string>
+    <string name="language_english">English</string>
+    <string name="language_hindi">Hindi</string>
+    <string name="language_chinese">Chinese</string>
+
+    <!-- ===== Button Names ===== -->
+    <string name="button_save">Save</string>
+    <string name="button_cancel">Cancel</string>
+</resources>

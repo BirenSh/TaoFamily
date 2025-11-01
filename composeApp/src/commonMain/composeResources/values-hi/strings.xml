@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">ताओ फैमिली</string>
+
+    <string name="settings_title">सेटिंग्स</string>
+
+    <!-- ===== भाषा नाम ===== -->
+    <string name="greeting">नमस्ते!</string>
+    <string name="language_app_name">ताओ फैमिली</string>
+    <string name="language_label">भाषा</string>
+    <string name="language_english">अंग्रेज़ी</string>
+    <string name="language_hindi">हिंदी</string>
+    <string name="language_chinese">चीनी</string>
+
+    <!-- ===== बटन नाम ===== -->
+    <string name="button_save">सहेजें</string>
+    <string name="button_cancel">रद्द करें</string>
+</resources>

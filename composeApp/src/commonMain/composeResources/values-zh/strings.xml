@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">道家家庭</string>
+
+    <string name="settings_title">设置</string>
+
+    <!-- ===== 语言名称 ===== -->
+    <string name="greeting">你好！</string>
+    <string name="language_app_name">道家家庭</string>
+    <string name="language_label">语言</string>
+    <string name="language_english">英语</string>
+    <string name="language_hindi">印地语</string>
+    <string name="language_chinese">中文</string>
+
+    <!-- ===== 按钮名称 ===== -->
+    <string name="button_save">保存</string>
+    <string name="button_cancel">取消</string>
+</resources>
