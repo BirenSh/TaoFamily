@@ -34,7 +34,6 @@ class SyncViewModel(
                 settingPreFrance.setIsLoggedIn(true)
                 println("===sync complete")
             } catch (e: Exception) {
-                println("===syncFailed: ${e.message}")
                 _isFirstTimeSyncComplete.value = UiState.Error(e.message ?: "Sync Failed")
                 settingPreFrance.setIsLoggedIn(false)
             }

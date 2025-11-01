@@ -62,7 +62,6 @@ class InitRemoteDataSourceImpl(
 
             // Get starting row index from the range (e.g., "2025!A1:O100" -> 1)
             val startRow = extractStartRowFromRange(parsed.range)
-            println("Sheet Start Row: $startRow")
 
             // Map each row to domain + compute sheet row index
             return sheetRows.mapIndexedNotNull { index, row ->
@@ -102,7 +101,6 @@ class InitRemoteDataSourceImpl(
             }
 
            val filteredResponse =   Json.decodeFromString<AppendResponse?>(bodyText)
-            println("fetchAllEntries: $filteredResponse")
             return filteredResponse
 
         } catch (e: Exception) {
@@ -142,7 +140,6 @@ class InitRemoteDataSourceImpl(
             return Json.decodeFromString<UpdateResponse?>(bodyText)
 
         } catch (e: Exception) {
-            println("===eror updateEntry: ${e.message}")
             throw Exception("Network or Serialization Error during sheet update: ${e.message}", e)
         }
     }
@@ -156,7 +153,6 @@ class InitRemoteDataSourceImpl(
         fun JsonElement?.safeString(): String = (this?.toString()?.trim('"') ?: "").trim()
         val rowData = row.map { it.safeString() }
 
-        println("===name: ${rowData.getOrNull(1)} and check: ${ rowData.getOrNull(13)?.toBooleanStrictOrNull()} ")
         return try {
             InitiationFormFiled(
                 personId = rowData.getOrNull(0) ?: "",

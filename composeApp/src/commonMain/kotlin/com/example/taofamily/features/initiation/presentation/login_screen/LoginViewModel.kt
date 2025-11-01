@@ -23,7 +23,6 @@ class LoginViewModel(
 
     fun getAppIsLoggedIn(){
         screenModelScope.launch {
-        println("===islogged: ${settingPreFrance.getIsLoggedIn()}")
         _isLoggedIn.value = settingPreFrance.getIsLoggedIn()
         }
     }

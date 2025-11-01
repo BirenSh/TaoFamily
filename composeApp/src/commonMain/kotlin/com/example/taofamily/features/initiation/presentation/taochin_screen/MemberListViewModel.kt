@@ -109,7 +109,6 @@ class MemberListViewModel(
 
     fun updateFilter(filter: FilterState){
         _filterState.value = filter
-        println("===update: ${_filterState.value}")
     }
 
     fun logoutApp(){

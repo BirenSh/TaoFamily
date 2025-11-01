@@ -78,10 +78,7 @@ class FilterScreen(
         // Local mutable states for user editing (user commits changes upon button press)
         var currentFilterState by remember { mutableStateOf(initialFilterState) }
         val state by memberViewModel.state.collectAsState()
-        if (state is UiState.Success) {
-            val count = (state as UiState.Success<List<InitiationFormFiled>>).result.size
-            println("state count in filter: $count")
-        }
+
 
         FilterScreenCompose(
             currentFilterState = currentFilterState,
