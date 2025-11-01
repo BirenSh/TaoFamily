@@ -27,8 +27,20 @@ class InitiationFormViewModel(
     private val _submitFormState = MutableStateFlow<UiState<String>>(UiState.Ideal)
     val submitFormState: StateFlow<UiState<String>> = _submitFormState.asStateFlow()
 
+    var initialId = "NA"
 
 
+    //load initial data with object if exist, mostly for edit
+    fun loadInitialData(entry: InitiationFormFiled?) {
+        screenModelScope.launch {
+            if (entry != null) {
+                _formData.value = entry
+                initialId = entry.personId
+            }
+        }
+    }
+
+    //keep updating the form object while typing
     fun updateForm(newEntry: InitiationFormFiled) {
         _formData.value = newEntry
 
@@ -38,7 +50,7 @@ class InitiationFormViewModel(
 
     fun onSubmitClick() {
         screenModelScope.launch {
-            updateForm(newEntry = _formData.value.copy(personId = AppConstant.getRandomUniqueId()))
+
             val finalData = _formData.value
             val formError = dateNumValidation(finalData)
 
@@ -52,7 +64,11 @@ class InitiationFormViewModel(
             _submitFormState.value = UiState.Loading
             // api call and local save
             try {
-                initiationRepository.saveEntry(finalData)
+                if (initialId==(finalData.personId)){
+                    initiationRepository.updateEntry(finalData)
+                }else{
+                    initiationRepository.saveEntry(finalData)
+                }
                 // if no exception mean success
                 _submitFormState.value = UiState.Success(AppConstant.SUCCESS_RESULT)
 
@@ -63,6 +79,7 @@ class InitiationFormViewModel(
         }
     }
 
+    //initial validation for the form
     private fun formValidation(data: InitiationFormFiled): Boolean {
         val baseValidation =  data.personName.isNotEmpty() &&
                 (data.personAge > 0  && data.personAge < 200) &&
@@ -86,6 +103,7 @@ class InitiationFormViewModel(
         return baseValidation && dmDateValidation
     }
 
+    //detail validation after initial validation
     private fun dateNumValidation(finalData: InitiationFormFiled): Pair<Boolean, String>{
         //1 check base the filed is added
         if (!_isFormValid.value) return Pair(false, "Form is not valid")

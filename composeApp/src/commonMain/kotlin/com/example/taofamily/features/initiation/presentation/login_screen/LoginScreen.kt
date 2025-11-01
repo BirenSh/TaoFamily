@@ -25,39 +25,79 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
+import com.example.taofamily.core.ui.ErrorDialog
+import com.example.taofamily.core.ui.LoadingDialog
 import com.example.taofamily.core.ui.TaoFamilyTheme
+import com.example.taofamily.core.utils.UiState
+import com.example.taofamily.features.initiation.domain.model.LoginModel
 import com.example.taofamily.features.initiation.presentation.syncScreen.FirstTimeSyncScreen
-import com.example.taofamily.features.initiation.presentation.taochin_screen.MemberListScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
-class LoginScreen(val loginViewModel: LoginViewModel?= null) : Screen {
+class LoginScreen() : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.current
-        LoginScreenCompose(
-            onLoginSuccess = {
-                loginViewModel?.setIsLoggedIn(true)
+        val viewModel: LoginViewModel = getScreenModel()
+        val loginResponse =  viewModel.loginResponse.collectAsState().value
+        val onLoginClick: (LoginModel)-> Unit={
+            viewModel.loginButtonClick(loginModel = it)
+        }
+        val dismissError = { viewModel.resetState() }
+
+        LoadingDialog(
+            isVisible = loginResponse is UiState.Loading,
+            labelText = "Submitting Form",
+            onDismissCall = dismissError
+
+        )
+
+        ErrorDialog(
+            isVisible = loginResponse is UiState.Error,
+            errorMessage = (loginResponse as? UiState.Error)?.errorMessage?:"Something went wrong",
+            onDismissCall = dismissError
+        )
+
+        LaunchedEffect(loginResponse){
+            if (loginResponse is UiState.Success){
                 navigator?.replace(FirstTimeSyncScreen())
+                viewModel.resetState()
             }
+        }
+
+        LoginScreenCompose(
+            onLoginClick,
+            loginResponse
         )
     }
 
     @Composable
     fun LoginScreenCompose(
-        onLoginSuccess: () -> Unit
+        onLoginClick: (LoginModel) -> Unit,
+        loginResponse: UiState<Boolean>
     ) {
 
         var partnerKey  by remember { mutableStateOf<String>("re") }
         var userName  by remember { mutableStateOf<String>("sad") }
         var password  by remember { mutableStateOf<String>("dsa") }
+
+        val loginModel = LoginModel(
+            userName = userName,
+            password = password,
+            partnerKey = partnerKey
+        )
+
+
         var showValidationError by remember { mutableStateOf(false) }
 
         val partnerKeyValid = remember(partnerKey) {
@@ -114,25 +154,12 @@ class LoginScreen(val loginViewModel: LoginViewModel?= null) : Screen {
                         showValidationError = true
                     }
                     else{
-                        onLoginSuccess()
+                        onLoginClick(loginModel)
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
             )
 
-        }
-    }
-
-
-    @Composable
-    @Preview(
-        showBackground = true,
-        widthDp = 360,
-        heightDp = 640,
-    )
-    fun Test(){
-        TaoFamilyTheme {
-            LoginScreenCompose(onLoginSuccess = {})
         }
     }
 

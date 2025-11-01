@@ -74,6 +74,10 @@ class InitiationFormScreen(
 
         val isFormValid by  formViewModel.isFormValid.collectAsState()
 
+        LaunchedEffect(Unit){
+            formViewModel.loadInitialData(entry)
+        }
+
         val onBackClick: () -> Unit = {
             navigator?.popUntilRoot()
         }

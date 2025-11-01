@@ -20,17 +20,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cake
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.CalendarViewDay
-import androidx.compose.material.icons.filled.CalendarViewMonth
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.EditNote
-import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.EventSeat
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Person4
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.PersonPin
@@ -38,7 +33,6 @@ import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.TempleBuddhist
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -61,7 +55,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
@@ -70,6 +63,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.example.taofamily.core.ui.AppColors
 import com.example.taofamily.core.ui.ScreenTopbar
 import com.example.taofamily.features.initiation.domain.model.InitiationFormFiled
+import com.example.taofamily.features.initiation.presentation.form_screen.InitiationFormScreen
 
 class MemberDetailScreen(
     private val memberId: String
@@ -79,18 +73,36 @@ class MemberDetailScreen(
         val navigator = LocalNavigator.current
         val viewModel: DetailViewModel = getScreenModel ()
         val memberDetail by viewModel.memberDetail.collectAsState()
+
+        val onBackPressed:()-> Unit = {
+            navigator?.pop()
+        }
+        val onEditPressed:()-> Unit = {
+            navigator?.push(InitiationFormScreen(memberDetail))
+        }
+
+
         LaunchedEffect(memberId) {
 
             viewModel.getDetail(memberId)
         }
 
-        DetailScreenUI(memberDetail)
+        DetailScreenUI(
+            memberDetail =  memberDetail,
+            onBackPressed = onBackPressed,
+            onEditPressed = onEditPressed
+
+        )
     }
 
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun DetailScreenUI(memberDetail: InitiationFormFiled?) {
+    fun DetailScreenUI(
+        memberDetail: InitiationFormFiled?,
+        onBackPressed: () -> Unit,
+        onEditPressed: () -> Unit
+    ) {
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
         Scaffold(
             modifier =  Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -100,10 +112,10 @@ class MemberDetailScreen(
                     containerColor = Color.Transparent,
                     trailingIcon = Icons.Default.EditNote,
                     onActionClick = {
-
+                        onEditPressed()
                     },
                     onBack = {
-
+                        onBackPressed()
                     },
                     scrollBehavior = scrollBehavior
                 )

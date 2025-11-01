@@ -18,7 +18,8 @@ CREATE TABLE Initiation (
     initiationDate TEXT NOT NULL,
     meritFee REAL NOT NULL,
     is2DaysDharmaClassAttend INTEGER AS Boolean NOT NULL,
-    dharmaMeetingDate TEXT NOT NULL
+    dharmaMeetingDate TEXT NOT NULL,
+    sheetRowIndex INTEGER
 );
 
 -- Queries
@@ -53,9 +54,10 @@ INSERT INTO Initiation(
     initiationDate,
     meritFee,
     is2DaysDharmaClassAttend,
-    dharmaMeetingDate
+    dharmaMeetingDate,
+    sheetRowIndex
 )
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?);
 
 update:
 UPDATE Initiation
@@ -72,7 +74,8 @@ SET personName = ?,
     initiationDate = ?,
     meritFee = ?,
     is2DaysDharmaClassAttend = ?,
-    dharmaMeetingDate = ?
+    dharmaMeetingDate = ?,
+    sheetRowIndex = ?
 WHERE personId = ?;
 
 deleteById:

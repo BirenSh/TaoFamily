@@ -20,3 +20,30 @@ data class SheetsResponse(
     // We use JsonElement to safely handle varied types (strings, numbers, booleans)
     val values: List<List<JsonElement>>? = null
 )
+
+
+@Serializable
+data class AppendResponse(
+    val spreadsheetId: String? = null,
+    val tableRange: String? = null,
+    val updates: UpdateData? = null
+)
+
+@Serializable
+data class UpdateData(
+    val spreadsheetId: String? = null,
+    val updatedRange: String? = null,
+    val updatedRows: Int? = null,
+    val updatedColumns: Int? = null,
+    val updatedCells: Int? = null
+)
+
+
+@Serializable
+data class UpdateResponse(
+    val spreadsheetId: String? = null,
+    val updatedRange: String? = null,
+    val updatedRows: Int? = null,
+    val updatedColumns: Int? = null,
+    val updatedCells: Int? = null
+)

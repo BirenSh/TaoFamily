@@ -31,3 +31,11 @@ object TempleColumnAdapter : ColumnAdapter<Temple, String> {
         Temple.entries.find { it.name == databaseValue } ?: Temple.NONE
     override fun encode(value: Temple): String = value.name
 }
+
+object LongColumnAdapter : ColumnAdapter<Long, Long> {
+    // Database Long -> Kotlin Long
+    override fun decode(databaseValue: Long): Long = databaseValue
+
+    // Kotlin Long -> Database Long
+    override fun encode(value: Long): Long = value
+}

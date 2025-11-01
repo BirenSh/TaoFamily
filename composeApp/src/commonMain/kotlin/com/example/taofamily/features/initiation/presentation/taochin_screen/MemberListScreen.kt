@@ -51,6 +51,7 @@ import com.example.taofamily.features.initiation.presentation.detail_screen.Memb
 import com.example.taofamily.features.initiation.presentation.filter_screen.FilterScreen
 import com.example.taofamily.features.initiation.presentation.form_screen.InitiationFormScreen
 import com.example.taofamily.features.initiation.presentation.login_screen.LoginScreen
+import com.example.taofamily.features.initiation.presentation.setting_screen.SettingScreen
 
 class MemberListScreen() : Screen {
 
@@ -72,8 +73,7 @@ class MemberListScreen() : Screen {
         }
 
         val onSettingClick : ()-> Unit = {
-            memberViewModel.logoutApp()
-            navigator?.replaceAll(LoginScreen())
+            navigator?.push(SettingScreen())
         }
 
         val searchQuery by memberViewModel.searchQuery.collectAsState()

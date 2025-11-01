@@ -7,7 +7,7 @@ object AppConstant {
    const val LOADING_FORM = "Loading"
 
    fun getRandomUniqueId(length: Int = 6): String {
-      val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+      val allowedChars = ('A'..'Z') + ('0'..'9')
       return (1..length)
          .map { allowedChars.random() }
          .joinToString("")

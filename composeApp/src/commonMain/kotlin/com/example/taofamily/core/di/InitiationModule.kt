@@ -12,6 +12,7 @@ import com.example.taofamily.features.initiation.data.repository.InitiationRepos
 import com.example.taofamily.features.initiation.presentation.detail_screen.DetailViewModel
 import com.example.taofamily.features.initiation.presentation.form_screen.InitiationFormViewModel
 import com.example.taofamily.features.initiation.presentation.login_screen.LoginViewModel
+import com.example.taofamily.features.initiation.presentation.setting_screen.SettingViewModel
 import com.example.taofamily.features.initiation.presentation.syncScreen.SyncViewModel
 import com.example.taofamily.features.initiation.presentation.taochin_screen.MemberListViewModel
 import com.russhwolf.settings.Settings
@@ -66,12 +67,17 @@ val initiationModule: Module = module{
     }
 
     factory {
-        SyncViewModel(initiationRepository = get())
-
+        SyncViewModel(
+            initiationRepository = get(),
+            settingPreFrance = get()
+            )
     }
 
     factory {
         DetailViewModel(initiateRepository = get())
+    }
+    factory {
+        SettingViewModel(settingPreFrance = get())
     }
 
 

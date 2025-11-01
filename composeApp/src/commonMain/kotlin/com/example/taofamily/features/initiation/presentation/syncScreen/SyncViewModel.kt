@@ -3,6 +3,7 @@ package com.example.taofamily.features.initiation.presentation.syncScreen
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.taofamily.core.utils.UiState
+import com.example.taofamily.features.initiation.data.local.SettingPreFrance
 import com.example.taofamily.features.initiation.data.repository.InitiationRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +16,7 @@ import kotlinx.coroutines.withContext
 
 class SyncViewModel(
     private val initiationRepository: InitiationRepository,
+    private val settingPreFrance: SettingPreFrance
 ) : ScreenModel {
 
 
@@ -29,10 +31,12 @@ class SyncViewModel(
 
                 initiationRepository.syncInitialData()
                 _isFirstTimeSyncComplete.value = UiState.Success(true)
+                settingPreFrance.setIsLoggedIn(true)
                 println("===sync complete")
             } catch (e: Exception) {
                 println("===syncFailed: ${e.message}")
                 _isFirstTimeSyncComplete.value = UiState.Error(e.message ?: "Sync Failed")
+                settingPreFrance.setIsLoggedIn(false)
             }
         }
         CoroutineScope(Dispatchers.IO).launch {

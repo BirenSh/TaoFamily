@@ -65,7 +65,8 @@ class InitLocalDataSourceImpl(
                     initiationDate = entry.initiationDate,
                     meritFee = entry.meritFee,
                     is2DaysDharmaClassAttend = entry.is2DaysDharmaClassAttend, // Boolean
-                    dharmaMeetingDate = entry.dharmaMeetingDate
+                    dharmaMeetingDate = entry.dharmaMeetingDate,
+                    sheetRowIndex = entry.sheetRowIndex
                 )
             // Verify the save
             val count = queries.countAll().executeAsOne()
@@ -89,7 +90,8 @@ class InitLocalDataSourceImpl(
                 initiationDate = entry.initiationDate,
                 meritFee = entry.meritFee,
                 is2DaysDharmaClassAttend = entry.is2DaysDharmaClassAttend, // Boolean
-                dharmaMeetingDate = entry.dharmaMeetingDate
+                dharmaMeetingDate = entry.dharmaMeetingDate,
+                sheetRowIndex = entry.sheetRowIndex
             )
             // Verify the save
             val count = queries.countAll().executeAsOne()
@@ -119,7 +121,8 @@ class InitLocalDataSourceImpl(
                     initiationDate = entry.initiationDate,
                     meritFee = entry.meritFee,
                     is2DaysDharmaClassAttend = entry.is2DaysDharmaClassAttend,
-                    dharmaMeetingDate = entry.dharmaMeetingDate
+                    dharmaMeetingDate = entry.dharmaMeetingDate,
+                    sheetRowIndex = entry.sheetRowIndex
                 )
             }
         }

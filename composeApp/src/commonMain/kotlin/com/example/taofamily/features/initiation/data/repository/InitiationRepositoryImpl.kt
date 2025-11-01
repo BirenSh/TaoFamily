@@ -1,5 +1,7 @@
 package com.example.taofamily.features.initiation.data.repository
 
+import com.example.taofamily.core.utils.AppConstant
+import com.example.taofamily.core.utils.Helper.extractStartRowFromRange
 import com.example.taofamily.features.initiation.data.local.InitLocalDataSource
 import com.example.taofamily.features.initiation.data.remote.InitRemoteDataSource
 import com.example.taofamily.features.initiation.domain.model.InitiationFormFiled
@@ -19,14 +21,17 @@ class InitiationRepositoryImpl(
     }
 
     override suspend fun saveEntry(entry: InitiationFormFiled) = withContext(dispatcher){
-
+        val updateEntry = entry.copy(personId = AppConstant.getRandomUniqueId())
         //Asynchronously push to server
         try {
             // remote save first
-            remoteDataSource.pushEntry(entry)
-
-            // if remote success without exception save locally
-            localDataSource.saveEntry(entry)
+            val sheetResponse = remoteDataSource.pushEntry(updateEntry)
+            if (sheetResponse != null){
+                val rowIndex = extractStartRowFromRange(sheetResponse.updates?.updatedRange)
+                // Save locally with correct sheetRowIndex
+                val entryWithRow = updateEntry.copy(sheetRowIndex = rowIndex)
+                localDataSource.saveEntry(entryWithRow)
+            }
 
         }catch (e: Exception){
             throw e

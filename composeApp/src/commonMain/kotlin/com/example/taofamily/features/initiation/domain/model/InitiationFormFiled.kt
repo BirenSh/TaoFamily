@@ -17,7 +17,8 @@ data class InitiationFormFiled(
     val initiationDate: String, // YYYY-MM-DD format
     val meritFee: Double, // Numeric
     val is2DaysDharmaClassAttend: Boolean,
-    val dharmaMeetingDate: String // YYYY-MM-DD format
+    val dharmaMeetingDate: String, // YYYY-MM-DD format,
+    val sheetRowIndex: Long? = null
 ){
     // Factory method to create an empty, default instance for the form screen
     companion object{
@@ -37,7 +38,8 @@ data class InitiationFormFiled(
                 initiationDate = "",
                 meritFee = 0.0,
                 is2DaysDharmaClassAttend = false,
-                dharmaMeetingDate = ""
+                dharmaMeetingDate = "",
+                sheetRowIndex = null
             )
         }
 

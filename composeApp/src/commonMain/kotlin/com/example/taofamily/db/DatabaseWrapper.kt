@@ -9,7 +9,7 @@ class DatabaseWrapper(driverFactory: DriverFactory) {
         InitiationAdapter = Initiation.Adapter(
             genderAdapter = GenderColumnAdapter,
             masterNameAdapter = MasterColumnAdapter,
-            templeNameAdapter = TempleColumnAdapter
+            templeNameAdapter = TempleColumnAdapter,
         )
 
     )

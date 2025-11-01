@@ -34,7 +34,7 @@ class SplashScreen: Screen {
             delay(2000)
             if (isLoggedIn.value) {
                 navigator?.replace(MemberListScreen())
-            } else navigator?.replace(LoginScreen(loginViewModel))
+            } else navigator?.replace(LoginScreen())
         }
 
         SplashCompose()
