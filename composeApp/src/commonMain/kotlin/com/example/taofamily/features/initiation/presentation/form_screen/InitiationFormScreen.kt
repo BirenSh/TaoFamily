@@ -1,11 +1,9 @@
 package com.example.taofamily.features.initiation.presentation.form_screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -34,12 +32,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -47,13 +42,12 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.example.taofamily.core.ui.AppColors
-import com.example.taofamily.core.ui.ErrorDialog
+import com.example.taofamily.core.ui.WarningDialog
 import com.example.taofamily.core.ui.FormCheckBox
 import com.example.taofamily.core.ui.FormDropdown
 import com.example.taofamily.core.ui.FormInputText
 import com.example.taofamily.core.ui.LoadingDialog
 import com.example.taofamily.core.ui.ScreenTopbar
-import com.example.taofamily.core.utils.AppConstant
 import com.example.taofamily.core.utils.DateUtils.formatRawDateString
 import com.example.taofamily.core.utils.DateVisualTransformation
 import com.example.taofamily.core.utils.UiState
@@ -101,10 +95,11 @@ class InitiationFormScreen(
 
         )
 
-        ErrorDialog(
+        WarningDialog(
             isVisible = submitFormState is UiState.Error,
             errorMessage = (submitFormState as? UiState.Error)?.errorMessage?:"Something went wrong",
-            onDismissCall = dismissError
+            onDismissCall = dismissError,
+            onActionClick = dismissError
         )
 
         LaunchedEffect(submitFormState){
@@ -212,14 +207,12 @@ class InitiationFormScreen(
                 onValueChange = { age ->
                     updateListener(formState.copy(personAge = age.toIntOrNull() ?: 0))
                 },
-                placeHolder = "Member Age",
+                placeHolder = "Age",
                 modifier = Modifier.weight(1f),
                 keyboardType = KeyboardType.Number,
                 icon = Icons.Default.Numbers,
                 maxChar = 3
             )
-//                    Spacer(modifier = Modifier.width(5.dp))
-
             //gender list
             val genderOptions = remember { Gender.entries.toList() }
             FormDropdown(
@@ -230,7 +223,7 @@ class InitiationFormScreen(
                 label = "Gender",
                 options = genderOptions,
                 icon = Icons.Default.ArrowDropDownCircle,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1.2f),
             )
         }
         FormInputText(

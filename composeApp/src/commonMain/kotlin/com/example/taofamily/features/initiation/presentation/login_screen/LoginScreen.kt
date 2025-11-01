@@ -35,13 +35,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
-import com.example.taofamily.core.ui.ErrorDialog
+import com.example.taofamily.core.ui.WarningDialog
 import com.example.taofamily.core.ui.LoadingDialog
-import com.example.taofamily.core.ui.TaoFamilyTheme
 import com.example.taofamily.core.utils.UiState
 import com.example.taofamily.features.initiation.domain.model.LoginModel
 import com.example.taofamily.features.initiation.presentation.syncScreen.FirstTimeSyncScreen
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 class LoginScreen() : Screen {
@@ -62,10 +60,11 @@ class LoginScreen() : Screen {
 
         )
 
-        ErrorDialog(
+        WarningDialog(
             isVisible = loginResponse is UiState.Error,
             errorMessage = (loginResponse as? UiState.Error)?.errorMessage?:"Something went wrong",
-            onDismissCall = dismissError
+            onDismissCall = dismissError,
+            onActionClick = dismissError
         )
 
         LaunchedEffect(loginResponse){

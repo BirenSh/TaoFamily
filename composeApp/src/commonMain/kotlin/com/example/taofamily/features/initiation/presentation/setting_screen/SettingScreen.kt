@@ -27,6 +27,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,6 +40,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.example.taofamily.core.ui.AppColors
+import com.example.taofamily.core.ui.WarningDialog
 import com.example.taofamily.core.ui.ScreenTopbar
 import com.example.taofamily.features.initiation.domain.language.Language
 import com.example.taofamily.features.initiation.presentation.login_screen.LoginScreen
@@ -52,18 +56,30 @@ class SettingScreen : Screen {
         val onBackPressed: () -> Unit = {
             navigator?.pop()
         }
+        var showWarning by remember {   mutableStateOf(false) }
+
         val onLogout: () -> Unit = {
-            viewmodel.logoutClick()
-            navigator?.replaceAll(LoginScreen())
+            showWarning = true
         }
 
         val onLanguageSelect: (String) ->Unit = {
-
+            viewmodel.setLanguage(it)
         }
 
         val currentLang by viewmodel.selectedLanguage.collectAsState()
         val languages = viewmodel.getAvailableLanguages()
 
+        WarningDialog(
+          isVisible =  showWarning,
+            errorMessage = "Sure Logout? ",
+            onDismissCall = {
+                showWarning = false
+            },
+            onActionClick = {
+                viewmodel.logoutClick()
+                navigator?.replaceAll(LoginScreen())
+            }
+        )
 
 
         SettingCompose(
@@ -153,13 +169,13 @@ class SettingScreen : Screen {
         }
     }
 
+
     @Composable
     fun LanguageSelector(
         currentLang: String,
         languages: List<Language>,
-        onLanguageSelect: (String)-> Unit
+        onLanguageSelect: (String) -> Unit
     ) {
-
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = stringResource(Res.string.language_label),
@@ -170,10 +186,11 @@ class SettingScreen : Screen {
 
             languages.forEach { lang ->
                 val isSelected = lang.code == currentLang
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable {onLanguageSelect(lang.code) }
+                        .clickable { onLanguageSelect(lang.code) }
                         .padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -181,12 +198,16 @@ class SettingScreen : Screen {
                         selected = isSelected,
                         onClick = { onLanguageSelect(lang.code) }
                     )
+
                     Spacer(modifier = Modifier.width(10.dp))
-                    Text(lang.displayName)
+
+                    Text(
+                        text = lang.displayName,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
             }
         }
     }
-
 
 }

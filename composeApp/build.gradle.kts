@@ -82,6 +82,7 @@ kotlin {
 
             // --- ADDED CORE SHARED DEPENDENCIES (Koin, Ktor, Serialization, ViewModel) ---
             implementation(libs.koin.core)                   // Koin Core DI
+            implementation(libs.koin.compose)                   // Koin Core DI
 
             implementation(libs.ktor.client.core)            // Ktor Networking Core
             implementation(libs.ktor.client.contentNegotiation) // Ktor Content Negotiation
@@ -98,9 +99,8 @@ kotlin {
             implementation(libs.voyager.screen.model)    // Lifecycle management for ViewModels/ScreenModels
             implementation(libs.voyager.koin)
             implementation(libs.mp.settings.noarg) //share preference for kmp
+            implementation(libs.multiplatform.settings)
 
-            implementation("dev.icerock.moko:resources:0.24.0")
-            implementation("dev.icerock.moko:resources-compose:0.24.0")
         }
         val iosMain by creating {
             dependencies{
